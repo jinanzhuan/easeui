@@ -48,6 +48,16 @@ public class EaseMessageAdapter extends EaseBaseDelegateAdapter<EMMessage> {
         return super.addDelegate(delegate);
     }
 
+    @Override
+    public EaseBaseDelegateAdapter setFallbackDelegate(EaseAdapterDelegate delegate) {
+        //设置点击事件
+        if(delegate instanceof EaseMessageAdapterDelegate) {
+            ((EaseMessageAdapterDelegate) delegate).setListItemClickListener(itemClickListener);
+            ((EaseMessageAdapterDelegate) delegate).setItemStyle(itemStyle);
+        }
+        return super.setFallbackDelegate(delegate);
+    }
+
     /**
      * get item message
      * @param position

@@ -96,6 +96,7 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
         layoutManager = new LinearLayoutManager(context);
         messageList.setLayoutManager(layoutManager);
         messageAdapter = new EaseMessageAdapter();
+        messageAdapter.showUserNick(showUserNick);
         registerDelegates();
         messageList.setAdapter(messageAdapter);
 
@@ -521,10 +522,6 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
      */
     public void showUserNick(boolean showUserNick) {
         this.showUserNick = showUserNick;
-        if(messageAdapter != null) {
-            messageAdapter.showUserNick(showUserNick);
-            messageAdapter.notifyDataSetChanged();
-        }
     }
 
     /**

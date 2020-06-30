@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
+import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
@@ -55,6 +57,7 @@ import com.hyphenate.easeui.widget.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
+import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.VersionUtils;
@@ -188,6 +191,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     }
 
     private void initData() {
+        showNickname();
         //此处排除chatRoom的目的是，加入聊天室后，再进行初始化
         if(chatType != EaseConstant.CHATTYPE_CHATROOM) {
             chatMessageList.init(toChatUsername, chatType);
@@ -195,7 +199,6 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
             initConversation();
         }
         initChatType();
-        hideNickname();
         sendForwardMsg();
         setTypingHandler();
         initChildData();
@@ -451,6 +454,13 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         boolean refresh = false;
         for (EMMessage message : messages) {
             String username = null;
+            if(message.isNeedGroupAck() && message.isUnread()) {
+                try {
+                    EMClient.getInstance().chatManager().ackGroupMessageRead(message.getTo(), message.getMsgId(), "");
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
             // group message
             if (message.getChatType() == EMMessage.ChatType.GroupChat || message.getChatType() == EMMessage.ChatType.ChatRoom) {
                 username = message.getTo();
@@ -537,6 +547,15 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     }
 
     /**
+     * EMMessageListener
+     * @param groupReadAcks
+     */
+    @Override
+    public void onGroupMessageRead(List<EMGroupReadAck> groupReadAcks) {
+        Log.e("TAG", "groupReadAcks.size = "+groupReadAcks.size());
+    }
+
+    /**
      * inputMenu addTextChangedListener
      * @param s
      * @param start
@@ -598,9 +617,16 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     /**
      * developer can override the method to change default chat extend menu items
      */
-    protected void initInputMenu() {
-        inputMenu.registerDefaultMenuItems(this);
+    private void initInputMenu() {
+        initExtendInputMenu();
         addExtendInputMenu(inputMenu);
+    }
+
+    /**
+     * init input menu view
+     */
+    protected void initExtendInputMenu() {
+        inputMenu.registerDefaultMenuItems(this);
     }
 
     /**
@@ -815,11 +841,16 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      * @param content
      */
     protected void sendTextMessage(String content) {
+        sendTextMessage(content, false);
+    }
+
+    protected void sendTextMessage(String content, boolean isDeliverAcked) {
         if(EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
             return;
         }
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
+        message.setDeliverAcked(isDeliverAcked);
         sendMessage(message);
     }
 
@@ -1118,9 +1149,9 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     /**
      * 不展示nickname
      */
-    protected void hideNickname() {
-        if(isSingleChat()) {
-            chatMessageList.showUserNick(false);
+    protected void showNickname() {
+        if(!isSingleChat()) {
+            chatMessageList.showUserNick(true);
         }
     }
 

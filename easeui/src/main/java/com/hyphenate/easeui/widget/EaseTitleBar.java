@@ -231,6 +231,10 @@ public class EaseTitleBar extends RelativeLayout implements View.OnClickListener
     public void setTitle(String title){
         titleView.setText(title);
     }
+
+    public TextView getTitle() {
+        return titleView;
+    }
     
     public void setBackgroundColor(int color){
         titleLayout.setBackgroundColor(color);
