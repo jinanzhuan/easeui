@@ -844,13 +844,13 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         sendTextMessage(content, false);
     }
 
-    protected void sendTextMessage(String content, boolean isDeliverAcked) {
+    protected void sendTextMessage(String content, boolean isNeedGroupAck) {
         if(EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
             return;
         }
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
-        message.setDeliverAcked(isDeliverAcked);
+        message.setIsNeedGroupAck(isNeedGroupAck);
         sendMessage(message);
     }
 

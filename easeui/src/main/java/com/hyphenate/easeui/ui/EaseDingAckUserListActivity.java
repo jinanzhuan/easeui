@@ -28,6 +28,7 @@ public class EaseDingAckUserListActivity extends EaseBaseActivity {
 
     private ListView ackUserListView;
     private EaseTitleBar titleBar;
+    private TextView tvNoData;
 
     private EMMessage msg;
 
@@ -37,10 +38,11 @@ public class EaseDingAckUserListActivity extends EaseBaseActivity {
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
-
         setContentView(R.layout.ease_activity_ding_ack_user_list);
+        setFitSystemForTheme(true);
         ackUserListView = (ListView) findViewById(R.id.list_view);
         titleBar = (EaseTitleBar) findViewById(R.id.title_bar);
+        tvNoData = findViewById(R.id.tv_no_data);
         titleBar.setTitle(getString(R.string.title_ack_read_list));
 
         // Set the title bar left layout click listener to back to previous activity.
@@ -85,7 +87,9 @@ public class EaseDingAckUserListActivity extends EaseBaseActivity {
                 @Override
                 public void onUpdate(List<String> list) {
                     EMLog.i(TAG, "onUpdate: " + list.size());
-
+                    if(list != null && list.size() > 0) {
+                        tvNoData.setVisibility(View.GONE);
+                    }
                     userList.clear();
                     userList.addAll(list);
 
