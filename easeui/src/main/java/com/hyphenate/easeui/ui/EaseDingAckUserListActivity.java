@@ -88,17 +88,12 @@ public class EaseDingAckUserListActivity extends EaseBaseActivity {
                 public void onUpdate(List<String> list) {
                     EMLog.i(TAG, "onUpdate: " + list.size());
                     if(list != null && list.size() > 0) {
-                        tvNoData.setVisibility(View.GONE);
+                        runOnUiThread(()-> tvNoData.setVisibility(View.GONE));
                     }
                     userList.clear();
                     userList.addAll(list);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            userAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    runOnUiThread(() -> userAdapter.notifyDataSetChanged());
                 }
             };
 

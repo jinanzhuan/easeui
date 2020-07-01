@@ -32,7 +32,9 @@ public class EaseTextViewHolder extends EaseChatRowViewHolder{
     @Override
     public void onBubbleClick(EMMessage message) {
         super.onBubbleClick(message);
-        if (!EaseDingMessageHelper.get().isDingMessage(message)) {
+        if (!EaseDingMessageHelper.get().isDingMessage(message) ||
+                message.getChatType() != EMMessage.ChatType.GroupChat ||
+                message.direct() != EMMessage.Direct.SEND) {
             return;
         }
 
