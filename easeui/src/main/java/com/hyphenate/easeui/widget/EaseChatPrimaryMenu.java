@@ -326,4 +326,12 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             editText.setHint(hint);
         }
     }
+
+    @Override
+    public String getInputContent() {
+        if(editText == null) {
+            return "";
+        }
+        return editText.getText().toString().trim();
+    }
 }
