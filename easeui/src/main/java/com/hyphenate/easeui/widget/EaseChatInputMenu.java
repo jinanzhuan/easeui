@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.StringRes;
+
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseEmojiconGroupEntity;
@@ -321,6 +323,30 @@ public class EaseChatInputMenu extends LinearLayout {
      */
     public void insertText(String text){
         getPrimaryMenu().onTextInsert(text);
+    }
+
+    /**
+     * set edit text hint
+     * @param hint
+     */
+    public void setHint(String hint) {
+        getPrimaryMenu().setHint(hint);
+    }
+
+    /**
+     * set edit text hint
+     * @param hint
+     */
+    public void setHint(@StringRes int hint) {
+        setHint(context.getString(hint));
+    }
+
+    /**
+     * get edit text content
+     * @return
+     */
+    public String getInputContent() {
+        return getPrimaryMenu().getInputContent();
     }
 
     /**
