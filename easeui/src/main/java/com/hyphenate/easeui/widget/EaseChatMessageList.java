@@ -125,6 +125,7 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE
                         && status == loadMoreStatus.HAS_MORE
+                        && layoutManager.findLastVisibleItemPosition() != 0
                         && layoutManager.findLastVisibleItemPosition() == layoutManager.getItemCount() -1){
                     //showLiveList(true);
                     if(listener != null) {
@@ -482,7 +483,7 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
      * @return
      */
     public boolean haveNewMessages() {
-        if(currentMessages == null) {
+        if(currentMessages == null || conversation == null || conversation.getLastMessage() == null) {
             return false;
         }
         return conversation.getLastMessage().getMsgTime() > currentMessages.get(currentMessages.size() - 1).getMsgTime();

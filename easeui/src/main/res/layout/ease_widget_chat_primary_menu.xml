@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="2dip"
-    android:paddingBottom="4dp">
+    android:paddingTop="2dip">
 
     <View
         android:layout_width="match_parent"
@@ -15,11 +14,12 @@
     <LinearLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="52dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="4dp" >
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <Button
             android:id="@+id/btn_set_mode_voice"
@@ -33,7 +33,7 @@
             android:id="@+id/btn_set_mode_keyboard"
             android:layout_width="@dimen/ease_chat_primary_menu_icon_size"
             android:layout_height="@dimen/ease_chat_primary_menu_icon_size"
-            android:layout_marginLeft="6dp"
+            android:layout_marginLeft="16dp"
             android:background="@drawable/ease_chatting_setmode_keyboard_btn"
             android:visibility="gone" />
 
