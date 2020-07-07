@@ -60,8 +60,12 @@
             android:id="@+id/right_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="15dp"
+            android:paddingLeft="15dp"
             android:textSize="@dimen/em_toolbar_title_right_size"
+            android:maxLines="1"
+            android:maxLength="5"
             android:textColor="@color/em_toolbar_color_title_right"/>
 
     </RelativeLayout>
