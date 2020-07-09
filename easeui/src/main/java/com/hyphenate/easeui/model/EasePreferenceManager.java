@@ -58,5 +58,19 @@ public class EasePreferenceManager {
     public boolean isMergeStream() {
         return mSharedPreferences.getBoolean(SHARED_KEY_SETTING_MERGE_STREAM, false);
     }
-    
+
+
+    /**
+     * 保存未发送的文本消息内容
+     * @param toChatUsername
+     * @param content
+     */
+    public void saveUnSendMsgInfo(String toChatUsername, String content) {
+        editor.putString(toChatUsername, content);
+        editor.apply();
+    }
+
+    public String getUnSendMsgInfo(String toChatUsername) {
+        return mSharedPreferences.getString(toChatUsername, "");
+    }
 }
