@@ -164,11 +164,17 @@ public class EaseContactListFragment extends EaseBaseFragment implements SwipeRe
                     }
                 }
                 sortData(easeUsers);
-                callBack.onSuccess(easeUsers);
+                runOnUiThread(()-> {
+                    callBack.onSuccess(easeUsers);
+                });
+
 
             } catch (HyphenateException e) {
                 e.printStackTrace();
-                callBack.onError(e.getErrorCode(), e.getDescription());
+                runOnUiThread(()-> {
+                    callBack.onError(e.getErrorCode(), e.getDescription());
+                });
+
             }
         }).start();
     }

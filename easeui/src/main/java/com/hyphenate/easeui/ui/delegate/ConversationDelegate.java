@@ -19,6 +19,7 @@ import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseBaseDelegate;
 import com.hyphenate.easeui.adapter.EaseBaseRecyclerViewAdapter;
+import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.model.EasePreferenceManager;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -73,7 +74,11 @@ public class ConversationDelegate extends EaseBaseDelegate<EMConversation, Conve
             mMsgState = findViewById(R.id.msg_state);
             mentioned = findViewById(R.id.mentioned);
             message = findViewById(R.id.message);
-            avatar.setShapeType(EaseUI.getInstance().getAvatarOptions().getAvatarShape());
+            EaseAvatarOptions avatarOptions = EaseUI.getInstance().getAvatarOptions();
+            if(avatarOptions != null) {
+                avatar.setShapeType(avatarOptions.getAvatarShape());
+            }
+
         }
 
         @Override
