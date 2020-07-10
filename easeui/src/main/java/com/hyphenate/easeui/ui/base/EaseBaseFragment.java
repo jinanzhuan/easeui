@@ -2,6 +2,8 @@ package com.hyphenate.easeui.ui.base;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +18,7 @@ import com.hyphenate.easeui.ui.EaseBaiduMapFragment;
 
 public class EaseBaseFragment extends Fragment {
     public Activity mContext;
+    private Handler mainHandler;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -62,6 +65,18 @@ public class EaseBaseFragment extends Fragment {
      */
     public boolean isActivityDisable() {
         return mContext == null || mContext.isFinishing();
+    }
+
+
+    /**
+     * 切换到UI线程
+     * @param runnable
+     */
+    public void runOnUiThread(Runnable runnable) {
+        if(mainHandler == null) {
+            mainHandler = new Handler(Looper.getMainLooper());
+        }
+        mainHandler.post(runnable);
     }
 
 }

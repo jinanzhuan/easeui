@@ -123,11 +123,11 @@ public class EaseRecyclerView extends RecyclerView {
         return false;
     }
 
-    private int getFootersCount() {
+    public int getFootersCount() {
         return mFooterViewInfos.size();
     }
 
-    private int getHeadersCount() {
+    public int getHeadersCount() {
         return mHeaderViewInfos.size();
     }
 
