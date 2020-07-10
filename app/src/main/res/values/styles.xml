@@ -1,11 +1,53 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="main_bottom_view_normal">
+        <item name="android:textColor">@color/em_main_color_tab_normal</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="main_bottom_view_selected">
+        <item name="android:textColor">@color/em_main_color_tab_selected</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="em_login_et_input">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_marginLeft">33dp</item>
+        <item name="android:layout_marginRight">33dp</item>
+        <item name="android:maxWidth">400dp</item>
+        <item name="android:background">@drawable/demo_login_et_bg</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="em_login_btn">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">40dp</item>
+        <item name="android:layout_marginLeft">33dp</item>
+        <item name="android:layout_marginRight">33dp</item>
+        <item name="android:background">@drawable/demo_login_btn_bg</item>
+        <item name="android:textColor">@color/demo_login_btn_text_color</item>
+        <item name="android:enabled">true</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:drawableRight">@drawable/demo_login_btn_right_unable</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingLeft">45dp</item>
+        <item name="android:paddingStart">45dp</item>
     </style>
 
 </resources>
