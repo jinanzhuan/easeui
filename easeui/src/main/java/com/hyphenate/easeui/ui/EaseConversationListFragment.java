@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.adapter.EaseAdapterDelegate;
 import com.hyphenate.easeui.adapter.EaseConversationListAdapter;
 import com.hyphenate.easeui.interfaces.OnItemClickListener;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
@@ -36,7 +37,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 会话列表
+ * 会话列表，展示了基本的会话列表逻辑。如果需要添加系统消息等类型，可重写{@link #addDelegate()}，
+ * 调用{@link #listAdapter}的{@link EaseConversationListAdapter#addDelegate(EaseAdapterDelegate)}
+ * 方法添加相应的类型即可。
  */
 public class EaseConversationListFragment extends EaseBaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnItemClickListener {
     protected ViewStub viewStub;
