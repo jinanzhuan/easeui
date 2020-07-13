@@ -14,7 +14,8 @@
     <LinearLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
+        android:minHeight="52dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -74,11 +75,11 @@
             <EditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
                 android:layout_marginRight="35dip"
                 android:background="@drawable/ease_send_message_et_bg"
                 android:maxLines="3"
-                android:minHeight="40dp"
                 android:paddingBottom="3dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
