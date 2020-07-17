@@ -1,8 +1,9 @@
-package com.hyphenate.easeui.widget;
+package com.hyphenate.easeui.widget.chatextend;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +15,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.adapter.EaseBaseChatExtendMenuAdapter;
+import com.hyphenate.easeui.adapter.EaseChatExtendMenuAdapter;
 import com.hyphenate.util.DensityUtil;
 
 import java.util.ArrayList;
@@ -26,46 +33,69 @@ import java.util.List;
  * Extend menu when user want send image, voice clip, etc
  *
  */
-public class EaseChatExtendMenu extends GridView{
+public class EaseChatExtendMenu extends RecyclerView {
     protected Context context;
     private List<ChatMenuItemModel> itemModels = new ArrayList<ChatMenuItemModel>();
-    private ItemAdapter adapter;
+    private EaseChatExtendMenuAdapter adapter;
+    private int numColumns;
+    private int numRows;
+    private PagingScrollHelper helper;
+    private EaseChatExtendMenuItemClickListener listener;
 
-    public EaseChatExtendMenu(Context context, AttributeSet attrs, int defStyle) {
-        this(context, attrs);
+    public EaseChatExtendMenu(Context context) {
+        this(context, null);
     }
 
     public EaseChatExtendMenu(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+    }
+
+    public EaseChatExtendMenu(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
         init(context, attrs);
     }
 
-    public EaseChatExtendMenu(Context context) {
-        super(context);
-        init(context, null);
-    }
-    
     private void init(Context context, AttributeSet attrs){
         this.context = context;
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseChatExtendMenu);
-        int numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
+        numColumns = ta.getInt(R.styleable.EaseChatExtendMenu_numColumns, 4);
+        numRows = ta.getInt(R.styleable.EaseChatExtendMenu_numRows, 2);
         ta.recycle();
-        
-        setNumColumns(numColumns);
-        setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-        setGravity(Gravity.CENTER_VERTICAL);
-        setVerticalSpacing(DensityUtil.dip2px(context, 8));
     }
     
     /**
      * init
      */
     public void init(){
-        adapter = new ItemAdapter(context, itemModels);
-        adapter.setNotifyOnChange(true);
+        HorizontalPageLayoutManager manager = new HorizontalPageLayoutManager(numRows, numColumns);
+        manager.setItemHeight(DensityUtil.dip2px(context, 90));
+        setLayoutManager(manager);
+        setHasFixedSize(true);
+        adapter = new EaseChatExtendMenuAdapter();
+        addDelegate();
+        adapter.setData(itemModels);
         setAdapter(adapter);
+
+        helper = new PagingScrollHelper();
+        helper.setUpRecycleView(this);
+        helper.updateLayoutManger();
+        helper.scrollToPosition(0);
+        setHorizontalFadingEdgeEnabled(true);
     }
-    
+
+    private void addDelegate() {
+        adapter.setEaseChatExtendMenuItemClickListener(listener);
+
+    }
+
+    /**
+     * 注册条目布局
+     * @param listener
+     */
+    public void registerMenuItemListener(EaseChatExtendMenuItemClickListener listener) {
+        this.listener = listener;
+    }
+
     /**
      * register menu item
      * 
@@ -103,36 +133,6 @@ public class EaseChatExtendMenu extends GridView{
         registerMenuItem(context.getString(nameRes), drawableRes, itemId, listener);
     }
 
-    private class ItemAdapter extends ArrayAdapter<ChatMenuItemModel>{
-        private Context context;
-
-        public ItemAdapter(Context context, List<ChatMenuItemModel> objects) {
-            super(context, 1, objects);
-            this.context = context;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ChatMenuItem menuItem = null;
-            if(convertView == null){
-                convertView = new ChatMenuItem(context);
-            }
-            menuItem = (ChatMenuItem) convertView;
-            menuItem.setImage(getItem(position).image);
-            menuItem.setText(getItem(position).name);
-            menuItem.setOnClickListener(new OnClickListener() {
-                
-                @Override
-                public void onClick(View v) {
-                    if(getItem(position).clickListener != null){
-                        getItem(position).clickListener.onChatExtendMenuItemClick(getItem(position).id, v);
-                    }
-                }
-            });
-            return convertView;
-        }
-    }
-
     /**
      * extend menu item click listener
      */
@@ -145,11 +145,11 @@ public class EaseChatExtendMenu extends GridView{
         void onChatExtendMenuItemClick(int itemId, View view);
     }
     
-    class ChatMenuItemModel{
-        String name;
-        int image;
-        int id;
-        EaseChatExtendMenuItemClickListener clickListener;
+    public static class ChatMenuItemModel{
+        public String name;
+        public int image;
+        public int id;
+        public EaseChatExtendMenuItemClickListener clickListener;
     }
     
     class ChatMenuItem extends LinearLayout {

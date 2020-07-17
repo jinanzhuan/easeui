@@ -51,6 +51,7 @@
 
     <declare-styleable name="EaseChatExtendMenu">
         <attr name="numColumns" format="integer"/>
+        <attr name="numRows" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="EaseEmojiconMenu">

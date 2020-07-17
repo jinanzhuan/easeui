@@ -53,7 +53,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
-import com.hyphenate.easeui.widget.EaseChatExtendMenu;
+import com.hyphenate.easeui.widget.chatextend.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
@@ -108,7 +108,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     private boolean turnOnTyping;
     /**
-     * 消息类别，SDK定义
+     * 消息发送对象(群组和聊天室为getTo(),单聊为getFrom())
      */
     protected String toChatUsername;
     protected File cameraFile;
