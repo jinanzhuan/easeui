@@ -1,5 +1,9 @@
 package com.hyphenate.easeui.model;
 
+import android.text.TextUtils;
+
+import com.hyphenate.easeui.constants.EaseConstant;
+
 import java.io.Serializable;
 
 /**
@@ -29,6 +33,12 @@ public class EaseEvent implements Serializable {
         return new EaseEvent(event, type);
     }
 
+    public static EaseEvent create(String event, TYPE type, String message) {
+        EaseEvent easeEvent = new EaseEvent(event, type);
+        easeEvent.message = message;
+        return easeEvent;
+    }
+
     public static EaseEvent create(String event, TYPE type, boolean refresh) {
         return new EaseEvent(event, type, refresh);
     }
@@ -42,7 +52,7 @@ public class EaseEvent implements Serializable {
     }
 
     public boolean isGroupLeave() {
-        return type == TYPE.GROUP_LEAVE;
+        return type == TYPE.GROUP_LEAVE || TextUtils.equals(event, EaseConstant.GROUP_LEAVE);
     }
 
     public boolean isChatRoomLeave() {
