@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,7 @@ import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.R;
@@ -707,6 +709,16 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      * show msg toast
      * @param message
      */
+    protected void showMsgToast(@StringRes int message) {
+        // developer can show the message by your own style
+        showMsgToast(getString(message));
+    }
+
+
+    /**
+     * show msg toast
+     * @param message
+     */
     protected void showMsgToast(String message) {
         // developer can show the message by your own style
     }
@@ -896,6 +908,12 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
+        Log.e("TAG", "current = "+EMClient.getInstance().getCurrentUser() + " to = "+toChatUsername);
+        EMMessageBody body = message.getBody();
+        String msgId = message.getMsgId();
+        String from = message.getFrom();
+        Log.e("TAG", "body = "+body);
+        Log.e("TAG", "msgId = "+msgId + " from = "+from);
         sendMessage(message);
     }
 
@@ -951,8 +969,8 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
 
             @Override
             public void onError(int code, String error) {
-                EMLog.d("msg", "send message onError");
-                showMsgToast("error code:"+code+" error message:"+message);
+                EMLog.d("msg", "send message onError error code:"+code + " error message:"+error);
+                showMsgToast("error code:"+code+" error message:"+error);
                 if(chatMessageList != null) {
                     chatMessageList.refreshMessages();
                 }

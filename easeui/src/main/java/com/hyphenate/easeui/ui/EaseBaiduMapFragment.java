@@ -32,6 +32,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
+import com.hyphenate.util.EMLog;
 
 
 public class EaseBaiduMapFragment extends EaseBaseFragment {
@@ -48,6 +49,7 @@ public class EaseBaiduMapFragment extends EaseBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EMLog.d("location", "fragment onCreate");
         //initialize SDK with context, should call this before setContentView
         SDKInitializer.initialize(requireActivity().getApplicationContext());
     }
@@ -55,6 +57,7 @@ public class EaseBaiduMapFragment extends EaseBaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EMLog.d("location", "fragment onCreateView");
         return inflater.inflate(R.layout.ease_fragment_baidumap, null);
     }
 
@@ -78,6 +81,7 @@ public class EaseBaiduMapFragment extends EaseBaseFragment {
             longtitude = bundle.getDouble("longtitude", 0);
             address = bundle.getString("address");
         }
+        EMLog.d("location", "fragment initArguments");
     }
 
     protected void initView() {
@@ -85,9 +89,11 @@ public class EaseBaiduMapFragment extends EaseBaseFragment {
         baiduMap = mapView.getMap();
         baiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(15.0f));
         mapView.setLongClickable(true);
+        EMLog.d("location", "fragment initView");
     }
 
     protected void initData() {
+        EMLog.d("location", "fragment initData");
         if(latitude == 0) {
             mapView = new MapView(mContext, new BaiduMapOptions());
             baiduMap.setMyLocationConfigeration(
@@ -104,6 +110,7 @@ public class EaseBaiduMapFragment extends EaseBaseFragment {
         iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
         mBaiduReceiver = new BaiduSDKReceiver();
         mContext.registerReceiver(mBaiduReceiver, iFilter);
+        EMLog.d("location", "fragment initData after");
     }
 
     @Override

@@ -170,6 +170,10 @@ public class EaseChatRowImage extends EaseChatRowFile {
                         EMLog.d("img", "bitmap width = "+image.getWidth() + " height = "+image.getHeight());
                         EaseImageUtils.showImage(imageView, image, maxWidth, maxHeight);
                         EaseImageCache.getInstance().put(thumbernailPath.toString(), image);
+                    }else {
+                        ViewGroup.LayoutParams params = imageView.getLayoutParams();
+                        params.width = 160;
+                        params.height = 160;
                     }
                 }
 

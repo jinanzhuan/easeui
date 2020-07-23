@@ -1,65 +1,52 @@
 package com.hyphenate.easeui.adapter;
 
-import com.hyphenate.easeui.widget.chatextend.EaseChatExtendMenu;
-import com.hyphenate.easeui.widget.chatextend.EaseBaseChatMenuDelegate;
-import com.hyphenate.easeui.widget.chatextend.EaseChatExtendMenu.EaseChatExtendMenuItemClickListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class EaseChatExtendMenuAdapter extends EaseBaseDelegateAdapter<EaseChatExtendMenu.ChatMenuItemModel> {
-    private EaseChatExtendMenuItemClickListener listener;
+import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.widget.chatextend.EaseChatExtendMenu.ChatMenuItemModel;
 
-    public EaseChatExtendMenuAdapter() {
-        if(mData == null) {
-            mData = new ArrayList<>();
-        }
+public class EaseChatExtendMenuAdapter extends EaseBaseChatExtendMenuAdapter<EaseChatExtendMenuAdapter.ViewHolder, ChatMenuItemModel> {
+    @Override
+    protected int getItemLayoutId() {
+        return R.layout.ease_chat_menu_item;
     }
 
-    public EaseChatExtendMenuAdapter(EaseChatExtendMenuItemClickListener listener) {
-        if(mData == null) {
-            mData = new ArrayList<>();
-        }
-        this.listener = listener;
+    @Override
+    protected EaseChatExtendMenuAdapter.ViewHolder easeCreateViewHolder(View view) {
+        return new ViewHolder(view);
     }
 
-    /**
-     * 设置条目监听
-     * @param listener
-     */
-    public void setEaseChatExtendMenuItemClickListener(EaseChatExtendMenuItemClickListener listener) {
-        this.listener = listener;
-        if(mData != null && !mData.isEmpty()) {
-            for(int i = 0; i < mData.size(); i++) {
-                mData.get(i).clickListener = listener;
+    @Override
+    public void onBindViewHolder(@NonNull EaseChatExtendMenuAdapter.ViewHolder holder, int position) {
+        ChatMenuItemModel item = mData.get(position);
+        holder.imageView.setBackgroundResource(item.image);
+        holder.textView.setText(item.name);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(item.clickListener != null){
+                    item.clickListener.onChatExtendMenuItemClick(item.id, v);
+                }
             }
-            notifyDataSetChanged();
+        });
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView imageView;
+        private TextView textView;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageView = (ImageView) itemView.findViewById(R.id.image);
+            textView = (TextView) itemView.findViewById(R.id.text);
         }
-    }
-
-    public EaseBaseDelegateAdapter addDelegate(EaseBaseChatMenuDelegate delegate) {
-        getItemMenuData(delegate);
-        return super.addDelegate(delegate);
-    }
-
-    public EaseBaseDelegateAdapter addDelegate(EaseBaseChatMenuDelegate delegate, String tag) {
-        getItemMenuData(delegate);
-        return super.addDelegate(delegate, tag);
-    }
-
-    public EaseBaseDelegateAdapter setFallbackDelegate(EaseBaseChatMenuDelegate delegate) {
-        getItemMenuData(delegate);
-        return super.setFallbackDelegate(delegate);
-    }
-
-    public EaseBaseDelegateAdapter setFallbackDelegate(EaseBaseChatMenuDelegate delegate, String tag) {
-        getItemMenuData(delegate);
-        return super.setFallbackDelegate(delegate, tag);
-    }
-
-    private void getItemMenuData(EaseBaseChatMenuDelegate delegate) {
-        EaseChatExtendMenu.ChatMenuItemModel itemMenu = delegate.getExtendItemMenu();
-        itemMenu.clickListener = listener;
-        mData.add(itemMenu);
     }
 }
 

@@ -72,7 +72,6 @@ public class EaseChatExtendMenu extends RecyclerView {
         setLayoutManager(manager);
         setHasFixedSize(true);
         adapter = new EaseChatExtendMenuAdapter();
-        addDelegate();
         adapter.setData(itemModels);
         setAdapter(adapter);
 
@@ -81,19 +80,6 @@ public class EaseChatExtendMenu extends RecyclerView {
         helper.updateLayoutManger();
         helper.scrollToPosition(0);
         setHorizontalFadingEdgeEnabled(true);
-    }
-
-    private void addDelegate() {
-        adapter.setEaseChatExtendMenuItemClickListener(listener);
-
-    }
-
-    /**
-     * 注册条目布局
-     * @param listener
-     */
-    public void registerMenuItemListener(EaseChatExtendMenuItemClickListener listener) {
-        this.listener = listener;
     }
 
     /**

@@ -483,7 +483,7 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
      * @return
      */
     public boolean haveNewMessages() {
-        if(currentMessages == null || conversation == null || conversation.getLastMessage() == null) {
+        if(currentMessages == null || currentMessages.isEmpty() || conversation == null || conversation.getLastMessage() == null) {
             return false;
         }
         return conversation.getLastMessage().getMsgTime() > currentMessages.get(currentMessages.size() - 1).getMsgTime();

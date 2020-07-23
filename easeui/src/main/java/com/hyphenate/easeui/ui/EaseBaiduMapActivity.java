@@ -14,29 +14,57 @@
 package com.hyphenate.easeui.ui;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BaiduMapOptions;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseTitleBar;
+import com.hyphenate.util.EMLog;
 
 public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleBar.OnBackPressListener,
 																		EaseTitleBar.OnRightClickListener,
 																		EaseBaiduMapFragment.OnBDLocationListener {
 	private EaseTitleBar titleBarMap;
+	private MapView mapView;
+	private BaiduMap baiduMap;
 	private BDLocation lastLocation;
+	protected double latitude;
+	protected double longtitude;
+	protected String address;
+	private BaiduSDKReceiver mBaiduReceiver;
+	private LocationClient mLocClient;
 
 	public static void actionStartForResult(Fragment fragment, int requestCode) {
 		Intent intent = new Intent(fragment.getContext(), EaseBaiduMapActivity.class);
@@ -59,15 +87,25 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//initialize SDK with context, should call this before setContentView
+		SDKInitializer.initialize(getApplicationContext());
 		setContentView(R.layout.ease_activity_baidumap);
 		setFitSystemForTheme(false, R.color.transparent, true);
+		initIntent();
 		initView();
 		initListener();
 		initData();
 	}
 
+	private void initIntent() {
+		latitude = getIntent().getDoubleExtra("latitude", 0);
+		longtitude = getIntent().getDoubleExtra("longtitude", 0);
+		address = getIntent().getStringExtra("address");
+	}
+
 	private void initView() {
 		titleBarMap = findViewById(R.id.title_bar_map);
+		mapView = findViewById(R.id.bmapView);
 		titleBarMap.setRightTitleResource(R.string.button_send);
 		double latitude = getIntent().getDoubleExtra("latitude", 0);
 		if(latitude != 0) {
@@ -88,6 +126,10 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 		if(layoutParams instanceof ViewGroup.MarginLayoutParams) {
 		    ((ViewGroup.MarginLayoutParams) layoutParams).setMargins(0, 0, left, 0);
 		}
+
+		baiduMap = mapView.getMap();
+		baiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(15.0f));
+		mapView.setLongClickable(true);
 	}
 
 	private void initListener() {
@@ -96,15 +138,55 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 	}
 
 	private void initData() {
-		EaseBaiduMapFragment fragment = new EaseBaiduMapFragment();
-		Bundle bundle = new Bundle();
-		bundle.putDouble("latitude", getIntent().getDoubleExtra("latitude", 0));
-		bundle.putDouble("longtitude", getIntent().getDoubleExtra("longtitude", 0));
-		bundle.putString("address", getIntent().getStringExtra("address"));
-		fragment.setArguments(bundle);
-		getSupportFragmentManager().beginTransaction().replace(R.id.fl_fragment, fragment).commit();
+		if(latitude == 0) {
+			mapView = new MapView(this, new BaiduMapOptions());
+			baiduMap.setMyLocationConfigeration(
+					new MyLocationConfiguration(MyLocationConfiguration.LocationMode.NORMAL, true, null));
+			showMapWithLocationClient();
+		}else {
+			LatLng lng = new LatLng(latitude, longtitude);
+			mapView = new MapView(this,
+					new BaiduMapOptions().mapStatus(new MapStatus.Builder().target(lng).build()));
+			showMap(latitude, longtitude);
+		}
+		IntentFilter iFilter = new IntentFilter();
+		iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
+		iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
+		mBaiduReceiver = new BaiduSDKReceiver();
+		registerReceiver(mBaiduReceiver, iFilter);
+	}
 
-		fragment.setOnBDLocationListener(this);
+	protected void showMapWithLocationClient() {
+		mLocClient = new LocationClient(this);
+		mLocClient.registerLocationListener(new EaseBDLocationListener());
+		LocationClientOption option = new LocationClientOption();
+		// open gps
+		option.setOpenGps(true);
+		// option.setCoorType("bd09ll");
+		// Johnson change to use gcj02 coordination. chinese national standard
+		// so need to conver to bd09 everytime when draw on baidu map
+		option.setCoorType("gcj02");
+		option.setScanSpan(30000);
+		option.setAddrType("all");
+		option.setIgnoreKillProcess(true);
+		mLocClient.setLocOption(option);
+		if(!mLocClient.isStarted()) {
+			mLocClient.start();
+		}
+	}
+
+	protected void showMap(double latitude, double longtitude) {
+		LatLng lng = new LatLng(latitude, longtitude);
+		CoordinateConverter converter = new CoordinateConverter();
+		converter.coord(lng);
+		converter.from(CoordinateConverter.CoordType.COMMON);
+		LatLng convertLatLng = converter.convert();
+		OverlayOptions ooA = new MarkerOptions().position(convertLatLng).icon(BitmapDescriptorFactory
+				.fromResource(R.drawable.ease_icon_marka))
+				.zIndex(4).draggable(true);
+		baiduMap.addOverlay(ooA);
+		MapStatusUpdate u = MapStatusUpdateFactory.newLatLngZoom(convertLatLng, 17.0f);
+		baiduMap.animateMapStatus(u);
 	}
 
 	@Override
@@ -119,10 +201,20 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 
 	@Override
 	public void onReceiveBDLocation(BDLocation bdLocation) {
-		lastLocation = bdLocation;
-		if(bdLocation != null) {
-			titleBarMap.getRightLayout().setClickable(true);
+		if(bdLocation == null) {
+			return;
 		}
+		if (lastLocation != null) {
+			if (lastLocation.getLatitude() == bdLocation.getLatitude() && lastLocation.getLongitude() == bdLocation.getLongitude()) {
+				Log.d("map", "same location, skip refresh");
+				// mMapView.refresh(); //need this refresh?
+				return;
+			}
+		}
+		titleBarMap.getRightLayout().setClickable(true);
+		lastLocation = bdLocation;
+		baiduMap.clear();
+		showMap(lastLocation.getLatitude(), lastLocation.getLongitude());
 	}
 
 	private void sendLocation() {
@@ -132,5 +224,64 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 		intent.putExtra("address", lastLocation.getAddrStr());
 		this.setResult(RESULT_OK, intent);
 		finish();
+	}
+
+	@Override
+	protected void onResume() {
+		mapView.onResume();
+		if (mLocClient != null) {
+			if(!mLocClient.isStarted()) {
+				mLocClient.start();
+			}
+		}
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		mapView.onPause();
+		if (mLocClient != null) {
+			mLocClient.stop();
+		}
+		super.onPause();
+		lastLocation = null;
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (mLocClient != null)
+			mLocClient.stop();
+		mapView.onDestroy();
+		unregisterReceiver(mBaiduReceiver);
+		super.onDestroy();
+	}
+
+	public class BaiduSDKReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if(TextUtils.equals(action, SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
+				showErrorToast(getResources().getString(R.string.please_check));
+			}else if(TextUtils.equals(action, SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
+				showErrorToast(getResources().getString(R.string.Network_error));
+			}
+		}
+	}
+
+	public class EaseBDLocationListener implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation bdLocation) {
+			onReceiveBDLocation(bdLocation);
+		}
+	}
+
+	/**
+	 * show error message
+	 * @param message
+	 */
+	protected void showErrorToast(String message) {
+		Toast.makeText(EaseBaiduMapActivity.this, message, Toast.LENGTH_SHORT).show();
 	}
 }
