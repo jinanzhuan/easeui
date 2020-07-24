@@ -19,9 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class SidebarPresenter implements EaseSidebar.OnTouchEventListener{
     private TextView mFloatingHeader;
     private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
 
-    public void setupWithRecyclerView(RecyclerView recyclerView, TextView floatingHeader) {
+    public void setupWithRecyclerView(RecyclerView recyclerView, RecyclerView.Adapter adapter, TextView floatingHeader) {
         this.mRecyclerView = recyclerView;
+        this.mAdapter = adapter;
         this.mFloatingHeader = floatingHeader;
     }
 
@@ -43,14 +45,13 @@ public class SidebarPresenter implements EaseSidebar.OnTouchEventListener{
     }
 
     private void moveToRecyclerItem(String pointer) {
-        RecyclerView.Adapter adapter = mRecyclerView.getAdapter();
-        if(adapter instanceof EaseRecyclerView.WrapperRecyclerViewAdapter) {
-            adapter = ((EaseRecyclerView.WrapperRecyclerViewAdapter) adapter).getAdapter();
-        }
-        if(!(adapter instanceof EaseBaseRecyclerViewAdapter)) {
+        if(mAdapter == null) {
             return;
         }
-        List data = ((EaseBaseRecyclerViewAdapter)adapter).getData();
+        if(!(mAdapter instanceof EaseBaseRecyclerViewAdapter)) {
+            return;
+        }
+        List data = ((EaseBaseRecyclerViewAdapter)mAdapter).getData();
         if(data == null || data.isEmpty()) {
             return;
         }

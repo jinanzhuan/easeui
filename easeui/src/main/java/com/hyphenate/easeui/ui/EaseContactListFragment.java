@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -101,14 +102,33 @@ public class EaseContactListFragment extends EaseBaseFragment implements SwipeRe
         rvContactList.setHasFixedSize(true);
         rvContactList.setLayoutManager(new LinearLayoutManager(mContext));
         adapter = new EaseContactListAdapter();
-        rvContactList.setAdapter(adapter);
+        //通过官方提供的ConcatAdapter可以很便捷的添加头尾布局
+        ConcatAdapter concatAdapter = new ConcatAdapter();
+        addHeader(concatAdapter);
+        concatAdapter.addAdapter(adapter);
+        addFooter(concatAdapter);
+        rvContactList.setAdapter(concatAdapter);
 
         presenter = new SidebarPresenter();
-        presenter.setupWithRecyclerView(rvContactList, floatingHeader);
+        presenter.setupWithRecyclerView(rvContactList, adapter, floatingHeader);
 
         //注册快捷菜单
         registerForContextMenu(rvContactList);
     }
+
+    /**
+     * 提供添加Header的方法
+     * 利用google提供的ConcatAdapter提供的concatAdapter.addAdapter(headerAdapter)
+     * @param concatAdapter
+     */
+    public void addHeader(ConcatAdapter concatAdapter) {}
+
+    /**
+     * 提供添加Footer的方法
+     * 利用google提供的ConcatAdapter提供的concatAdapter.addAdapter(footerAdapter)
+     * @param concatAdapter
+     */
+    public void addFooter(ConcatAdapter concatAdapter) {}
 
     public void initListener() {
         srlContactRefresh.setOnRefreshListener(this);
