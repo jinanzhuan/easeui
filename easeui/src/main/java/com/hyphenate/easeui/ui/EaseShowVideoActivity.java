@@ -67,23 +67,24 @@ public class EaseShowVideoActivity extends EaseBaseActivity {
 	}
 
 	private void showLocalVideo(Uri videoUri) {
-		String filePath = UriUtils.getFilePath(this, videoUri);
-		if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
-		    videoUri = EaseCompat.getUriForFile(this, new File(filePath));
-		}
-		try {
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			String mimeType = EaseCompat.getMimeType(this, UriUtils.getFileNameByUri(this, videoUri));
-			EMLog.d(TAG, "video uri = "+videoUri);
-			EMLog.d(TAG, "video mimeType = "+mimeType);
-			intent.setDataAndType(videoUri, mimeType);
-			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
-			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			startActivity(intent);
-		} catch (Exception e) {
-			e.printStackTrace();
-			EMLog.e(TAG, e.getMessage());
-		}
+		EaseShowLocalVideoActivity.actionStart(this, videoUri.toString());
+//		String filePath = UriUtils.getFilePath(this, videoUri);
+//		if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+//		    videoUri = EaseCompat.getUriForFile(this, new File(filePath));
+//		}
+//		try {
+//			Intent intent = new Intent(Intent.ACTION_VIEW);
+//			String mimeType = EaseCompat.getMimeType(this, UriUtils.getFileNameByUri(this, videoUri));
+//			EMLog.d(TAG, "video uri = "+videoUri);
+//			EMLog.d(TAG, "video mimeType = "+mimeType);
+//			intent.setDataAndType(videoUri, mimeType);
+//			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
+//			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//			startActivity(intent);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			EMLog.e(TAG, e.getMessage());
+//		}
 		finish();
 	}
 
