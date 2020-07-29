@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
@@ -105,32 +106,17 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-					    if(!isFinishing() && !isDestroyed()) {
-                            DisplayMetrics metrics = new DisplayMetrics();
-                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                            int screenWidth = metrics.widthPixels;
-                            int screenHeight = metrics.heightPixels;
-
-                            Uri localUrlUri = ((EMImageMessageBody) msg.getBody()).getLocalUri();
-                            try {
-                                bitmap = ImageUtils.decodeScaleImage(EaseShowBigImageActivity.this, localUrlUri, screenWidth, screenHeight);
-                                if (bitmap == null) {
-                                    image.setImageResource(default_res);
-                                } else {
-                                    image.setImageBitmap(bitmap);
-                                    EaseImageCache.getInstance().put(localUrlUri.toString(), bitmap);
-                                    isDownloaded = true;
-                                }
-                                if (isFinishing() || isDestroyed()) {
-                                    return;
-                                }
-                                if (pd != null) {
-                                    pd.dismiss();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-					    }
+						if (!isFinishing() && !isDestroyed()) {
+							if (pd != null) {
+								pd.dismiss();
+							}
+							isDownloaded = true;
+							Uri localUrlUri = ((EMImageMessageBody) msg.getBody()).getLocalUri();
+							Glide.with(EaseShowBigImageActivity.this)
+									.load(localUrlUri)
+									.apply(new RequestOptions().error(default_res))
+									.into(image);
+						}
 					}
 				});
 			}

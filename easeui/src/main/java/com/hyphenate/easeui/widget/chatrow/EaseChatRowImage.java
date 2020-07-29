@@ -33,17 +33,13 @@ import java.io.IOException;
 public class EaseChatRowImage extends EaseChatRowFile {
     protected ImageView imageView;
     private EMImageMessageBody imgBody;
-    private int maxWidth;
-    private int maxHeight;
 
     public EaseChatRowImage(Context context, boolean isSender) {
         super(context, isSender);
-        getScreenInfo(context);
     }
 
     public EaseChatRowImage(Context context, EMMessage message, int position, Object adapter) {
         super(context, message, position, adapter);
-        getScreenInfo(context);
     }
 
     @Override
@@ -66,9 +62,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             return;
         }
-        Uri filePath = imgBody.getLocalUri();
-        Uri thumbnailUrl = imgBody.thumbnailLocalUri();
-        showImageView(thumbnailUrl, filePath, message);
+        showImageView(message);
     }
 
     @Override
@@ -87,8 +81,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
                     progressBar.setVisibility(View.GONE);
                     percentageView.setVisibility(View.GONE);
                     imageView.setImageResource(R.drawable.ease_default_image);
-                    Uri thumbPath = imgBody.thumbnailLocalUri();
-                    showImageView(thumbPath, imgBody.getLocalUri(), message);
+                    showImageView(message);
                 }
             }
             return;
@@ -116,8 +109,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
             progressBar.setVisibility(View.GONE);
             percentageView.setVisibility(View.GONE);
             imageView.setImageResource(R.drawable.ease_default_image);
-            Uri thumbPath = imgBody.thumbnailLocalUri();
-            showImageView(thumbPath, imgBody.getLocalUri(), message);
+            showImageView(message);
         }
     }
 
@@ -126,80 +118,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
      *
      */
     @SuppressLint("StaticFieldLeak")
-    private void showImageView(final Uri thumbernailPath, final Uri localFullSizePath, final EMMessage message) {
-        // first check if the thumbnail image already loaded into cache s
-        Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath.toString());
-
-        if (bitmap != null) {
-            // thumbnail image is already loaded, reuse the drawable
-            EaseImageUtils.showImage(imageView, bitmap, maxWidth, maxHeight);
-        } else {
-            imageView.setImageResource(R.drawable.ease_default_image);
-            new AsyncTask<Object, Void, Bitmap>() {
-
-                @Override
-                protected Bitmap doInBackground(Object... args) {
-                    if (UriUtils.isFileExistByUri(context, localFullSizePath)) {
-                        return getCacheBitmap(localFullSizePath);
-                    } else if(UriUtils.isFileExistByUri(context, thumbernailPath)) {
-                        return getCacheBitmap(thumbernailPath);
-                    } else {
-                        if (message.direct() == EMMessage.Direct.SEND) {
-                            if (UriUtils.isFileExistByUri(context, localFullSizePath)) {
-                                String filePath = UriUtils.getFilePath(context, localFullSizePath);
-                                if(!TextUtils.isEmpty(filePath)) {
-                                    return EaseImageUtils.decodeScaleImage(filePath, maxWidth, maxHeight);
-                                }
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    try {
-                                        return EaseImageUtils.decodeScaleImage(context, localFullSizePath, maxWidth, maxHeight);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        return null;
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                        return null;
-                    }
-                }
-
-                protected void onPostExecute(Bitmap image) {
-                    if (image != null) {
-                        EMLog.d("img", "bitmap width = "+image.getWidth() + " height = "+image.getHeight());
-                        EaseImageUtils.showImage(imageView, image, maxWidth, maxHeight);
-                        EaseImageCache.getInstance().put(thumbernailPath.toString(), image);
-                    }else {
-                        ViewGroup.LayoutParams params = imageView.getLayoutParams();
-                        params.width = 160;
-                        params.height = 160;
-                    }
-                }
-
-                private Bitmap getCacheBitmap(Uri fileUri) {
-                    String filePath = UriUtils.getFilePath(context, fileUri);
-                    EMLog.d(EaseChatRow.TAG, "fileUri = "+fileUri);
-                    if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
-                        return EaseImageUtils.decodeScaleImage(filePath, maxWidth, maxHeight);
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        try {
-                            return EaseImageUtils.decodeScaleImage(context, fileUri, maxWidth, maxHeight);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    return null;
-                }
-            }.execute();
-        }
+    private void showImageView(final EMMessage message) {
+        EaseImageUtils.showImage(context, imageView, message);
     }
-
-    private void getScreenInfo(Context context) {
-        int[] imageMaxSize = EaseImageUtils.getImageMaxSize(context);
-        maxWidth = imageMaxSize[0];
-        maxHeight = imageMaxSize[1];
-    }
-
 }
