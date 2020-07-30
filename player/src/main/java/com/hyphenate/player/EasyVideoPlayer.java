@@ -51,7 +51,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 参考：https://github.com/mmbadimunei/easyVideoPlayer
+ * 简易视频播放器，参考：https://github.com/mmbadimunei/easyVideoPlayer
+ * 可以实现播放进度控制，播放暂停与继续播放等功能
  */
 public class EasyVideoPlayer extends FrameLayout
         implements EasyIUserMethods,
@@ -64,51 +65,18 @@ public class EasyVideoPlayer extends FrameLayout
         View.OnClickListener,
         SeekBar.OnSeekBarChangeListener {
 
-    @IntDef({LEFT_ACTION_NONE, LEFT_ACTION_RESTART, LEFT_ACTION_RETRY})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LeftAction {
-    }
-
-    @IntDef({RIGHT_ACTION_NONE, RIGHT_ACTION_SUBMIT, RIGHT_ACTION_CUSTOM_LABEL})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface RightAction {
-    }
-
-    public static final int LEFT_ACTION_NONE = 0;
-    public static final int LEFT_ACTION_RESTART = 1;
-    public static final int LEFT_ACTION_RETRY = 2;
-    public static final int RIGHT_ACTION_NONE = 3;
-    public static final int RIGHT_ACTION_SUBMIT = 4;
-    public static final int RIGHT_ACTION_CUSTOM_LABEL = 5;
     private static final int UPDATE_INTERVAL = 100;
-
-    public EasyVideoPlayer(Context context) {
-        super(context);
-        init(context, null);
-    }
-
-    public EasyVideoPlayer(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
-
-    public EasyVideoPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
-    }
 
     private TextureView mTextureView;
     private Surface mSurface;
-
     private View mControlsFrame;
     private View mClickFrame;
-
     private SeekBar mSeeker;
     private TextView mLabelPosition;
     private TextView mLabelDuration;
     private ImageButton mBtnPlayPause;
-
     private MediaPlayer mPlayer;
+
     private boolean mSurfaceAvailable;
     private boolean mIsPrepared;
     private boolean mWasPlaying;
@@ -150,6 +118,22 @@ public class EasyVideoPlayer extends FrameLayout
                     if (mHandler != null) mHandler.postDelayed(this, UPDATE_INTERVAL);
                 }
             };
+
+
+    public EasyVideoPlayer(Context context) {
+        super(context);
+        init(context, null);
+    }
+
+    public EasyVideoPlayer(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
+
+    public EasyVideoPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs);
+    }
 
     private void init(Context context, AttributeSet attrs) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -804,8 +788,6 @@ public class EasyVideoPlayer extends FrameLayout
             mHandler = null;
         }
     }
-
-    // Utilities
 
     private static void LOG(String message, Object... args) {
         try {

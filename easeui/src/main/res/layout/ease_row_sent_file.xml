@@ -52,9 +52,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:ellipsize="middle"
-                    android:singleLine="true"
+                    android:maxLines="2"
                     android:textColor="#000"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:text="的链接发链接拉萨酱豆腐历史交锋垃圾啊多方了解按附件垃圾发是的龙卷风拉动房价"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"

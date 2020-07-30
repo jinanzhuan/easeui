@@ -8,12 +8,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.hyphenate.easeui.ui.EaseBaiduMapFragment;
 
 
 public class EaseBaseFragment extends Fragment {

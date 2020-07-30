@@ -54,8 +54,7 @@ import com.hyphenate.easeui.widget.EaseTitleBar;
 import com.hyphenate.util.EMLog;
 
 public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleBar.OnBackPressListener,
-																		EaseTitleBar.OnRightClickListener,
-																		EaseBaiduMapFragment.OnBDLocationListener {
+																		EaseTitleBar.OnRightClickListener{
 	private EaseTitleBar titleBarMap;
 	private MapView mapView;
 	private BaiduMap baiduMap;
@@ -199,7 +198,6 @@ public class EaseBaiduMapActivity extends EaseBaseActivity implements EaseTitleB
 		sendLocation();
 	}
 
-	@Override
 	public void onReceiveBDLocation(BDLocation bdLocation) {
 		if(bdLocation == null) {
 			return;
