@@ -4,18 +4,16 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.adapter.EaseAdapterDelegate;
 import com.hyphenate.easeui.adapter.EaseBaseDelegateAdapter;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
-import com.hyphenate.easeui.ui.chat.delegates.EaseCustomAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseExpressionAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseFileAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseImageAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseLocationAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseTextAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseVideoAdapterDelegate;
-import com.hyphenate.easeui.ui.chat.delegates.EaseVoiceAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseCustomAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseExpressionAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseFileAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseImageAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseLocationAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseTextAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseVideoAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseVoiceAdapterDelegate;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class EaseConTypeSetManager {

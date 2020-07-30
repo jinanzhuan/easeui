@@ -1,6 +1,5 @@
-package com.hyphenate.easeui.ui.chat.delegates;
+package com.hyphenate.easeui.delegate;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 

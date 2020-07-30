@@ -3,17 +3,14 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.content.Context;
 import android.text.Spannable;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.utils.EaseDingMessageHelper;
+import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
-
-import java.util.List;
 
 public class EaseChatRowText extends EaseChatRow {
 	private TextView contentView;

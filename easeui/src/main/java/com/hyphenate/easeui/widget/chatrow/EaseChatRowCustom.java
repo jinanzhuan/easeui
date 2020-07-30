@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.hyphenate.chat.EMCustomMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.utils.EaseDingMessageHelper;
+import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 
 import java.util.List;
 

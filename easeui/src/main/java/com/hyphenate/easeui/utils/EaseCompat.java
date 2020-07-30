@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.model;
+package com.hyphenate.easeui.utils;
 
 import android.app.Activity;
 import android.content.ContentUris;

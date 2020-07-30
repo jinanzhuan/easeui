@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.ui.delegate;
+package com.hyphenate.easeui.delegate;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -20,8 +20,8 @@ import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseBaseDelegate;
 import com.hyphenate.easeui.adapter.EaseBaseRecyclerViewAdapter;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
-import com.hyphenate.easeui.model.EaseAtMessageHelper;
-import com.hyphenate.easeui.model.EasePreferenceManager;
+import com.hyphenate.easeui.manager.EaseAtMessageHelper;
+import com.hyphenate.easeui.manager.EasePreferenceManager;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.widget.EaseImageView;

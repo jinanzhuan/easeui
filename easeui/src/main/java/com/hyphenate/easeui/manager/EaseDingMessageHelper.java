@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.utils;
+package com.hyphenate.easeui.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;

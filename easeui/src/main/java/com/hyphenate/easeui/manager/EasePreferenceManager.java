@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.model;
+package com.hyphenate.easeui.manager;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

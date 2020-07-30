@@ -1,4 +1,4 @@
-package com.hyphenate.easeui;
+package com.hyphenate.easeui.manager;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,9 +7,8 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMGroupReadAck;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.model.EaseAtMessageHelper;
+import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.model.EaseNotifier;
-import com.hyphenate.easeui.utils.EaseDingMessageHelper;
 
 import java.util.List;
 

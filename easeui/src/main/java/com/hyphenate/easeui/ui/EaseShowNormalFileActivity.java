@@ -12,7 +12,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.model.EaseCompat;
+import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.UriUtils;

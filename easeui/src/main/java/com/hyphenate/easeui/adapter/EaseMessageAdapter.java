@@ -6,7 +6,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
-import com.hyphenate.easeui.ui.chat.delegates.EaseMessageAdapterDelegate;
+import com.hyphenate.easeui.delegate.EaseMessageAdapterDelegate;
 
 /**
  * 做为对话列表的adapter，继承自{@link EaseBaseDelegateAdapter}

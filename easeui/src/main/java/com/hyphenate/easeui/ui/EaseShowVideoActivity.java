@@ -1,6 +1,5 @@
 package com.hyphenate.easeui.ui;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,7 +17,6 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.R;
-import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.ui.base.EaseBaseActivity;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.UriUtils;

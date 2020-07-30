@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.ui.chat.delegates;
+package com.hyphenate.easeui.delegate;
 
 import android.text.TextUtils;
 import android.view.View;

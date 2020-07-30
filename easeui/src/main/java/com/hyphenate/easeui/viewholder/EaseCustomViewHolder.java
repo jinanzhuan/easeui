@@ -6,7 +6,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
-import com.hyphenate.easeui.utils.EaseDingMessageHelper;
+import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.exceptions.HyphenateException;
 
 import androidx.annotation.NonNull;

@@ -26,7 +26,7 @@ import com.hyphenate.easeui.adapter.EaseAdapterDelegate;
 import com.hyphenate.easeui.adapter.EaseConversationListAdapter;
 import com.hyphenate.easeui.interfaces.OnItemClickListener;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
-import com.hyphenate.easeui.ui.delegate.ConversationDelegate;
+import com.hyphenate.easeui.delegate.ConversationDelegate;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseRecyclerView;
 

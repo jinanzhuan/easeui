@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.ui.chat;
+package com.hyphenate.easeui.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,13 +46,12 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.interfaces.EaseChatRoomListener;
 import com.hyphenate.easeui.interfaces.EaseGroupListener;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
-import com.hyphenate.easeui.model.EaseAtMessageHelper;
-import com.hyphenate.easeui.model.EaseCompat;
+import com.hyphenate.easeui.manager.EaseAtMessageHelper;
+import com.hyphenate.easeui.utils.EaseCompat;
 import com.hyphenate.easeui.model.EaseEvent;
-import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.ui.base.EaseBaseFragment;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
-import com.hyphenate.easeui.utils.EaseDingMessageHelper;
+import com.hyphenate.easeui.manager.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.chatextend.EaseChatExtendMenu;

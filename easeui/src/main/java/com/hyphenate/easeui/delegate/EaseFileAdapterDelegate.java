@@ -1,4 +1,4 @@
-package com.hyphenate.easeui.ui.chat.delegates;
+package com.hyphenate.easeui.delegate;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,34 +7,34 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.viewholder.EaseChatRowViewHolder;
-import com.hyphenate.easeui.viewholder.EaseImageViewHolder;
+import com.hyphenate.easeui.viewholder.EaseFileViewHolder;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
-import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
+import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 
 /**
- * 图片代理类
+ * 文件代理类
  */
-public class EaseImageAdapterDelegate extends EaseMessageAdapterDelegate<EMMessage, EaseChatRowViewHolder> {
+public class EaseFileAdapterDelegate extends EaseMessageAdapterDelegate<EMMessage, EaseChatRowViewHolder> {
 
-    public EaseImageAdapterDelegate() {
+    public EaseFileAdapterDelegate() {
     }
 
-    public EaseImageAdapterDelegate(MessageListItemClickListener itemClickListener, EaseMessageListItemStyle itemStyle) {
+    public EaseFileAdapterDelegate(MessageListItemClickListener itemClickListener, EaseMessageListItemStyle itemStyle) {
         super(itemClickListener, itemStyle);
     }
 
     @Override
     public boolean isForViewType(EMMessage item, int position) {
-        return item.getType() == EMMessage.Type.IMAGE;
+        return item.getType() == EMMessage.Type.FILE;
     }
 
     @Override
     protected EaseChatRow getEaseChatRow(ViewGroup parent, boolean isSender) {
-        return new EaseChatRowImage(parent.getContext(), isSender);
+        return new EaseChatRowFile(parent.getContext(), isSender);
     }
 
     @Override
     protected EaseChatRowViewHolder createViewHolder(View view, MessageListItemClickListener itemClickListener, EaseMessageListItemStyle itemStyle) {
-        return new EaseImageViewHolder(view, itemClickListener, itemStyle);
+        return new EaseFileViewHolder(view, itemClickListener, itemStyle);
     }
 }
