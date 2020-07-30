@@ -27,6 +27,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ease_activity_show_file);
+		setFitSystemForTheme(false);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		final EMMessage message = getIntent().getParcelableExtra("msg");

@@ -4,7 +4,14 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.adapter.EaseAdapterDelegate;
 import com.hyphenate.easeui.adapter.EaseBaseDelegateAdapter;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
+import com.hyphenate.easeui.ui.chat.delegates.EaseCustomAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseExpressionAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseFileAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseImageAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseLocationAdapterDelegate;
 import com.hyphenate.easeui.ui.chat.delegates.EaseTextAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseVideoAdapterDelegate;
+import com.hyphenate.easeui.ui.chat.delegates.EaseVoiceAdapterDelegate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,8 +71,16 @@ public class EaseConTypeSetManager {
         if(adapter == null) {
             return;
         }
+        //如果没有注册聊天类型，则使用默认的
         if(delegates.size() <= 0) {
-            return;
+            addConversationType(EaseExpressionAdapterDelegate.class)       //自定义表情
+            .addConversationType(EaseFileAdapterDelegate.class)             //文件
+            .addConversationType(EaseImageAdapterDelegate.class)            //图片
+            .addConversationType(EaseLocationAdapterDelegate.class)         //定位
+            .addConversationType(EaseVideoAdapterDelegate.class)            //视频
+            .addConversationType(EaseVoiceAdapterDelegate.class)            //声音
+            .addConversationType(EaseCustomAdapterDelegate.class)           //自定义消息
+            .setDefaultConversionType(EaseTextAdapterDelegate.class);       //文本
         }
         for (Class<? extends EaseAdapterDelegate<?, ?>> cls : delegates) {
             EaseAdapterDelegate delegate = cls.newInstance();
