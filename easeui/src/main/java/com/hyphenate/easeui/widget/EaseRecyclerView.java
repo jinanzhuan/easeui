@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -114,13 +115,30 @@ public class EaseRecyclerView extends RecyclerView {
 
     @Override
     public boolean showContextMenuForChild(View originalView) {
-        int longPressPosition = getChildAdapterPosition(originalView);
+        int longPressPosition = getChildBindingAdapterPosition(originalView);
         if(longPressPosition >= 0) {
             long longPressId = getAdapter().getItemId(longPressPosition);
             mContextMenuInfo = new RecyclerViewContextMenuInfo(longPressPosition, longPressId);
             return super.showContextMenuForChild(originalView);
         }
         return false;
+    }
+
+    public int getChildBindingAdapterPosition(@NonNull View child) {
+        final RecyclerView.ViewHolder holder = getChildViewHolderInt(child);
+        return holder != null ? holder.getBindingAdapterPosition() : NO_POSITION;
+    }
+
+    RecyclerView.ViewHolder getChildViewHolderInt(View child) {
+        if (child == null) {
+            return null;
+        }
+        return getChildViewHolder(child);
+    }
+
+    @Override
+    public RecyclerView.ViewHolder getChildViewHolder(@NonNull View child) {
+        return super.getChildViewHolder(child);
     }
 
     public int getFootersCount() {
@@ -163,6 +181,29 @@ public class EaseRecyclerView extends RecyclerView {
             }
             position -= getHeadersCount();
             mAdapter.onBindViewHolder(holder, position);
+        }
+
+        @Override
+        public int findRelativeAdapterPositionIn(@NonNull Adapter<? extends RecyclerView.ViewHolder> adapter,
+                                                 @NonNull RecyclerView.ViewHolder viewHolder, int localPosition) {
+            if(adapter == this) {
+                return localPosition;
+            }else {
+                if(mAdapter instanceof ConcatAdapter) {
+                    List<? extends Adapter<? extends RecyclerView.ViewHolder>> adapters = ((ConcatAdapter) mAdapter).getAdapters();
+                    int prePosition = 0;
+                    for(int i = 0; i < adapters.size(); i++) {
+                        Adapter<? extends RecyclerView.ViewHolder> curAdapter = adapters.get(i);
+                        if(curAdapter == adapter) {
+                            return localPosition - prePosition;
+                        }else {
+                            prePosition += curAdapter.getItemCount();
+                        }
+                    }
+                    return NO_POSITION;
+                }
+            }
+            return super.findRelativeAdapterPositionIn(adapter, viewHolder, localPosition);
         }
 
         @Override
