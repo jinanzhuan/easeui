@@ -137,6 +137,9 @@ public class EaseContactListFragment extends EaseBaseFragment implements SwipeRe
     }
 
     public void initData() {
+        if(srlContactRefresh != null && !srlContactRefresh.isRefreshing()) {
+            srlContactRefresh.setRefreshing(true);
+        }
         refreshContactList();
     }
 

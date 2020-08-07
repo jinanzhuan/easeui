@@ -48,8 +48,6 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
             return;
         }
         T item = mData.get(position);
-        holder.setData(item, position);
-        holder.setDataList(mData, position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,6 +60,8 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
                 return itemLongClickAction(v, position);
             }
         });
+        holder.setData(item, position);
+        holder.setDataList(mData, position);
     }
 
     public boolean itemLongClickAction(View v, int position) {

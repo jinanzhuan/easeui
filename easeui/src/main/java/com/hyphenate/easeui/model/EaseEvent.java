@@ -67,7 +67,11 @@ public class EaseEvent implements Serializable {
         return type == TYPE.NOTIFY;
     }
 
+    public boolean isAccountChange() {
+        return type == TYPE.ACCOUNT;
+    }
+
     public enum TYPE {
-        GROUP, GROUP_LEAVE, CONTACT, MESSAGE, NOTIFY, CHAT_ROOM, CHAT_ROOM_LEAVE
+        GROUP, GROUP_LEAVE, CONTACT, MESSAGE, NOTIFY, CHAT_ROOM, CHAT_ROOM_LEAVE, ACCOUNT
     }
 }
