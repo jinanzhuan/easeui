@@ -23,12 +23,6 @@ public class EaseShowLocalVideoActivity extends EaseBaseActivity implements Easy
         context.startActivity(intent);
     }
 
-    public static void actionStart(Context context, Uri uri) {
-        Intent intent = new Intent(context, EaseShowLocalVideoActivity.class);
-        intent.putExtra("uri", uri);
-        context.startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);

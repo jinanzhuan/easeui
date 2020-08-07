@@ -4,8 +4,13 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -17,10 +22,15 @@ import android.widget.Toast;
 
 import com.hyphenate.easeui.R;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.UriUtils;
 import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -121,6 +131,66 @@ public class EaseCompat {
         } else {
             return WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         }
+    }
+
+    /**
+     * 获取视频第一帧图片
+     * @param context
+     * @param videoUri
+     * @return
+     */
+    public static String getVideoThumbnail(Context context, @NonNull Uri videoUri) {
+        File file = new File(PathUtil.getInstance().getVideoPath(), "thvideo" + System.currentTimeMillis());
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            MediaMetadataRetriever media = new MediaMetadataRetriever();
+            media.setDataSource(context, videoUri);
+            Bitmap frameAtTime = media.getFrameAtTime();
+            frameAtTime.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return file.getAbsolutePath();
+    }
+
+    /**
+     * 用于检查从多媒体获取文件是否是视频
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static boolean isVideoType(Context context, @NonNull Uri uri) {
+        String mimeType = getMimeType(context, uri);
+        if(TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("video");
+    }
+
+    /**
+     * 用于检查从多媒体获取文件是否是图片
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static boolean isImageType(Context context, @NonNull Uri uri) {
+        String mimeType = getMimeType(context, uri);
+        if(TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
+        return mimeType.startsWith("image");
+    }
+
+    /**
+     * 获取文件mime type
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static String getMimeType(Context context, @NonNull Uri uri) {
+        return context.getContentResolver().getType(uri);
     }
 
     public static String getMimeType(Context context, @NonNull File file) {
@@ -306,7 +376,7 @@ public class EaseCompat {
                 }
             }
             else if(isFileProvider(context, uri)) {
-                return uri.getPath();
+                return getFPUriToPath(context, uri);
             }
             // MediaStore (and general)
             else if ("content".equalsIgnoreCase(uri.getScheme())) {
@@ -372,6 +442,62 @@ public class EaseCompat {
         return null;
     }
 
+    /**
+     * 从FileProvider获取文件路径
+     * @param context
+     * @param uri
+     * @return
+     */
+    private static String getFPUriToPath(Context context, Uri uri) {
+        try {
+            List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+            if (packs != null) {
+                String fileProviderClassName = FileProvider.class.getName();
+                for (PackageInfo pack : packs) {
+                    ProviderInfo[] providers = pack.providers;
+                    if (providers != null) {
+                        for (ProviderInfo provider : providers) {
+                            if (uri.getAuthority().equals(provider.authority)) {
+                                if (provider.name.equalsIgnoreCase(fileProviderClassName)) {
+                                    Class<FileProvider> fileProviderClass = FileProvider.class;
+                                    try {
+                                        Method getPathStrategy = fileProviderClass.getDeclaredMethod("getPathStrategy", Context.class, String.class);
+                                        getPathStrategy.setAccessible(true);
+                                        Object invoke = getPathStrategy.invoke(null, context, uri.getAuthority());
+                                        if (invoke != null) {
+                                            String PathStrategyStringClass = FileProvider.class.getName() + "$PathStrategy";
+                                            Class<?> PathStrategy = Class.forName(PathStrategyStringClass);
+                                            Method getFileForUri = PathStrategy.getDeclaredMethod("getFileForUri", Uri.class);
+                                            getFileForUri.setAccessible(true);
+                                            Object invoke1 = getFileForUri.invoke(invoke, uri);
+                                            if (invoke1 instanceof File) {
+                                                String filePath = ((File) invoke1).getAbsolutePath();
+                                                return filePath;
+                                            }
+                                        }
+                                    } catch (NoSuchMethodException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (ClassNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * @param uri The Uri to check.
@@ -398,7 +524,7 @@ public class EaseCompat {
     }
 
     public static boolean isFileProvider(Context context, Uri uri) {
-        return (context.getApplicationInfo().packageName + ".fileProvider").equals(uri.getAuthority());
+        return (context.getApplicationInfo().packageName + ".fileProvider").equalsIgnoreCase(uri.getAuthority());
     }
 
 }
