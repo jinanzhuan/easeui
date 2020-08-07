@@ -97,6 +97,7 @@ public class EasyVideoPlayer extends FrameLayout
     private int mThemeColor = 0;
     private boolean mAutoFullscreen = false;
     private boolean mLoop = false;
+    private int currentPos;
 
     // Runnable used to run code on an interval to update counters and seeker
     private final Runnable mUpdateCounters =
@@ -107,6 +108,9 @@ public class EasyVideoPlayer extends FrameLayout
                         return;
                     int pos = mPlayer.getCurrentPosition();
                     final int dur = mPlayer.getDuration();
+                    if ("oppo".equals(Build.BRAND.toLowerCase()) && "OPPO R9sk".equals(Build.MODEL) && pos <= EasyVideoPlayer.this.currentPos) {
+                        pos = EasyVideoPlayer.this.currentPos;
+                    }
                     if (pos > dur) pos = dur;
                     mLabelPosition.setText(Util.getDurationString(pos, false));
                     mLabelDuration.setText(Util.getDurationString(dur, false));
@@ -118,7 +122,6 @@ public class EasyVideoPlayer extends FrameLayout
                     if (mHandler != null) mHandler.postDelayed(this, UPDATE_INTERVAL);
                 }
             };
-
 
     public EasyVideoPlayer(Context context) {
         super(context);
@@ -529,6 +532,9 @@ public class EasyVideoPlayer extends FrameLayout
         mSurface = new Surface(surfaceTexture);
         if (mIsPrepared) {
             mPlayer.setSurface(mSurface);
+            if ("oppo".equals(Build.BRAND.toLowerCase()) && "OPPO R9sk".equals(Build.MODEL)) {
+                this.mPlayer.seekTo(this.getCurrentPosition());
+            }
         } else {
             prepare();
         }
@@ -543,6 +549,9 @@ public class EasyVideoPlayer extends FrameLayout
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
         LOG("Surface texture destroyed");
+        if ("oppo".equals(Build.BRAND.toLowerCase()) && "OPPO R9sk".equals(Build.MODEL)) {
+            this.currentPos = this.getCurrentPosition();
+        }
         mSurfaceAvailable = false;
         mSurface = null;
         return false;
@@ -592,12 +601,18 @@ public class EasyVideoPlayer extends FrameLayout
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         LOG("onCompletion()");
+        if ("oppo".equals(Build.BRAND.toLowerCase()) && "OPPO R9sk".equals(Build.MODEL)) {
+            this.currentPos = 0;
+        }
         if (mLoop) {
             mBtnPlayPause.setImageDrawable(mPlayDrawable);
             if (mHandler != null) mHandler.removeCallbacks(mUpdateCounters);
             mSeeker.setProgress(mSeeker.getMax());
             showControls();
         } else {
+            seekTo(0);
+            mSeeker.setProgress(0);
+            mLabelPosition.setText(Util.getDurationString(0, false));
             mBtnPlayPause.setImageDrawable(mPlayDrawable);
             showControls();
         }
