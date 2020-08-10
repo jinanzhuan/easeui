@@ -27,7 +27,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ease_activity_show_file);
-		setFitSystemForTheme(false);
+        setFitSystemForTheme(true, R.color.transparent, true);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		final EMMessage message = getIntent().getParcelableExtra("msg");
@@ -41,11 +41,8 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        String filePath = getFilePath(message);
-                        if(!TextUtils.isEmpty(filePath)) {
-                            EMLog.d(TAG, "执行这里");
-                            EaseCompat.openFile(new File(filePath), EaseShowNormalFileActivity.this);
-                        }
+                        EaseCompat.openFile(EaseShowNormalFileActivity.this,
+                                ((EMFileMessageBody) message.getBody()).getLocalUri());
                         finish();
                     }
                 });
@@ -56,12 +53,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
             public void onError(final int code, final String error) {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        String filePath = getFilePath(message);
-                        if(TextUtils.isEmpty(filePath)) {
-                            File file = new File(filePath);
-                            if(file != null && file.exists()&&file.isFile())
-                                file.delete();
-                        }
+                        EaseCompat.deleteFile(EaseShowNormalFileActivity.this, ((EMFileMessageBody) message.getBody()).getLocalUri());
                         String str4 = getResources().getString(R.string.Failed_to_download_file);
                         if (code == EMError.FILE_NOT_FOUND) {
                             str4 = getResources().getString(R.string.File_expired);
@@ -83,9 +75,4 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
         });
         EMClient.getInstance().chatManager().downloadAttachment(message);
 	}
-
-	private String getFilePath(EMMessage message) {
-        Uri localUrlUri = ((EMFileMessageBody) message.getBody()).getLocalUri();
-        return UriUtils.getFilePath(this, localUrlUri);
-    }
 }

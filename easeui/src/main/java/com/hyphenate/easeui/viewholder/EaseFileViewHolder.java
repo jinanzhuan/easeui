@@ -40,16 +40,8 @@ public class EaseFileViewHolder extends EaseChatRowViewHolder{
         super.onBubbleClick(message);
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         Uri filePath = fileMessageBody.getLocalUri();
-        String fileLocalPath = UriUtils.getFilePath(getContext(), filePath);
-        File file = null;
-        if(!TextUtils.isEmpty(fileLocalPath)) {
-            file = new File(fileLocalPath);
-        }
-        if (file != null && file.exists()) {
-            // open files if it exist
-            EaseCompat.openFile(file, (Activity) getContext());
-        } else if(UriUtils.isFileExistByUri(getContext(), filePath)){
-            EaseCompat.openFile(filePath, UriUtils.getFileMimeType(getContext(), filePath), (Activity) getContext());
+        if(UriUtils.isFileExistByUri(getContext(), filePath)){
+            EaseCompat.openFile(getContext(), filePath);
         } else {
             // download the file
             getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));

@@ -79,26 +79,77 @@ public class EaseCompat {
      * @param context
      */
     public static void openFile(File f, Activity context) {
-        /* get uri */
-        Uri uri = getUriForFile(context, f);
-        //为了解决本地视频文件打不开的问题
-        if(isVideoFile(context, f.getName())) {
-            uri = Uri.parse(f.getAbsolutePath());
-        }
-        openFile(uri, context);
+        openFile(context, f);
     }
 
-    public static void openFile(Uri uri, String type, Activity context) {
+    /**
+     * 打开文件
+     * @param context
+     * @param filePath
+     */
+    public static void openFile(Context context, String filePath) {
+        if(TextUtils.isEmpty(filePath) || !new File(filePath).exists()) {
+            EMLog.e(TAG, "文件不存在！");
+            return;
+        }
+        openFile(context, new File(filePath));
+    }
+
+    /**
+     * 打开文件
+     * @param context
+     * @param file
+     */
+    public static void openFile(Context context, File file) {
+        String filename = file.getName();
+        String mimeType = getMimeType(context, file);
+        /* get uri */
+        Uri uri = getUriForFile(context, file);
+        //为了解决本地视频文件打不开的问题
+        if(isVideoFile(context, filename)) {
+            uri = Uri.parse(file.getAbsolutePath());
+        }
+        openFile(context, uri, filename, mimeType);
+    }
+
+    /**
+     * 打开文件
+     * @param context
+     * @param uri
+     */
+    public static void openFile(Context context, Uri uri) {
+        String filePath = UriUtils.getFilePath(context, uri);
+        //如果可以获取文件的绝对路径，则需要根据sdk版本处理FileProvider的问题
+        if(!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
+            openFile(context, new File(filePath));
+            return;
+        }
+        String filename = UriUtils.getFileNameByUri(context, uri);
+        String mimeType = UriUtils.getFileMimeType(context, uri);
+        if(TextUtils.isEmpty(mimeType) || TextUtils.equals(mimeType, "application/octet-stream")) {
+            mimeType = getMimeType(context, filename);
+        }
+        openFile(context, uri, filename, mimeType);
+    }
+
+    /**
+     * 打开文件
+     * @param context
+     * @param uri 此uri由FileProvider及ContentProvider生成
+     * @param filename
+     * @param mimeType
+     */
+    public static void openFile(Context context, Uri uri, String filename, String mimeType) {
         if(openApk(context, uri)) {
             return;
         }
-        EMLog.e(TAG, "openFile uri = "+uri + " type = "+type);
-        String filename = UriUtils.getFileNameByUri(context, uri);
+        EMLog.d(TAG, "openFile filename = "+filename + " mimeType = "+mimeType);
+        EMLog.d(TAG, "openFile uri = "+ (uri != null ? uri.toString() : "uri is null"));
         Intent intent = new Intent(Intent.ACTION_VIEW);
         setIntentByType(context, filename, intent);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         /* set intent's file and MimeType */
-        intent.setDataAndType(uri, type);
+        intent.setDataAndType(uri, mimeType);
         try {
             context.startActivity(intent);
         } catch (Exception e) {
@@ -108,13 +159,27 @@ public class EaseCompat {
         }
     }
 
-    public static void openFile(Uri uri, Activity context) {
-        String mimeType = UriUtils.getMimeType(context, uri);
-        if(TextUtils.isEmpty(mimeType) || TextUtils.equals(mimeType, "application/octet-stream")) {
-            mimeType = getMimeType(context, UriUtils.getFileNameByUri(context, uri));
+    /**
+     * 删除文件
+     * @param context
+     * @param uri
+     */
+    public static void deleteFile(Context context, Uri uri) {
+        if(UriUtils.isFileExistByUri(context, uri)) {
+            String filePath = UriUtils.getFilePath(context, uri);
+            if(!TextUtils.isEmpty(filePath)) {
+                File file = new File(filePath);
+                if(file != null && file.exists() && file.isFile()) {
+                    file.delete();
+                }
+            }else {
+                try {
+                    context.getContentResolver().delete(uri, null, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        EMLog.d(TAG, "mimeType = "+mimeType);
-        openFile(uri, mimeType, context);
     }
 
     public static Uri getUriForFile(Context context, @NonNull File file) {
@@ -257,6 +322,10 @@ public class EaseCompat {
 
     public static boolean openApk(Context context, Uri uri) {
         String filename = UriUtils.getFileNameByUri(context, uri);
+        return openApk(context, uri, filename);
+    }
+
+    public static boolean openApk(Context context, Uri uri, @NonNull String filename) {
         String filePath = UriUtils.getFilePath(context, uri);
         if(filename.endsWith(".apk")) {
             if(TextUtils.isEmpty(filePath) || !new File(filePath).exists()) {
@@ -379,11 +448,11 @@ public class EaseCompat {
                 return getFPUriToPath(context, uri);
             }
             // MediaStore (and general)
-            else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            else if (uriStartWithContent(uri)) {
                 return getDataColumn(context, uri, null, null);
             }
             // File
-            else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            else if (uriStartWithFile(uri)) {
                 return uri.getPath();
             }else if(uri.toString().startsWith("/")) {//如果是路径的话，返回路径
                 return uri.toString();
@@ -392,8 +461,7 @@ public class EaseCompat {
             //29之后，判断是否是file开头及是否是以"/"开头
             if(uriStartWithFile(uri)) {
                 return uri.getPath();
-            }
-            if(uri.toString().startsWith("/")) {
+            }else if(uri.toString().startsWith("/")) {
                 return uri.toString();
             }
         }
@@ -406,7 +474,16 @@ public class EaseCompat {
      * @return
      */
     public static boolean uriStartWithFile(Uri fileUri) {
-        return TextUtils.equals(fileUri.getScheme(), "file") && fileUri.toString().length() > 7;
+        return "file".equalsIgnoreCase(fileUri.getScheme()) && fileUri.toString().length() > 7;
+    }
+
+    /**
+     * 判断是否以content开头的Uri
+     * @param fileUri
+     * @return
+     */
+    public static boolean uriStartWithContent(Uri fileUri) {
+        return "content".equalsIgnoreCase(fileUri.getScheme());
     }
 
     /**

@@ -951,6 +951,10 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      * @param message
      */
     protected void sendMessage(EMMessage message) {
+        if(message == null) {
+            showMsgToast(R.string.ease_check_file_exist);
+            return;
+        }
         addMessageAttributes(message);
         if (chatType == EaseConstant.CHATTYPE_GROUP){
             message.setChatType(EMMessage.ChatType.GroupChat);

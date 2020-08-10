@@ -47,9 +47,7 @@ public class DemoApp extends Application implements Thread.UncaughtExceptionHand
 
     private void initHx() {
         EMOptions options = initChatOptions(this);
-        EMClient.getInstance().init(this, options);
-
-        EaseUI.getInstance().init(this);
+        EaseUI.getInstance().init(this, options);
         EaseUI.getInstance()
                 .setAvatarOptions(getAvatarOptions());
     }
