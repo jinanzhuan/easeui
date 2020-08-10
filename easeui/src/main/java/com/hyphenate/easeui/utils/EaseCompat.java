@@ -28,6 +28,9 @@ import com.hyphenate.util.VersionUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -446,6 +449,8 @@ public class EaseCompat {
             }
             else if(isFileProvider(context, uri)) {
                 return getFPUriToPath(context, uri);
+            }else if(isOtherFileProvider(context, uri)) {
+                return copyFileProviderUri(context, uri);
             }
             // MediaStore (and general)
             else if (uriStartWithContent(uri)) {
@@ -466,6 +471,53 @@ public class EaseCompat {
             }
         }
         return "";
+    }
+
+    /**
+     * 从FileProvider获取文件
+     * @param context
+     * @param uri
+     * @return
+     */
+    private static String copyFileProviderUri(Context context, Uri uri) {
+        //如果是分享过来的文件，则将其写入到私有目录下
+        String[] subs = uri.toString().split("/");
+        String filename = null;
+        if(subs.length > 0) {
+            filename = subs[subs.length -1];
+        }else {
+            return "";
+        }
+        String filePath = PathUtil.getInstance().getFilePath() + File.separator + filename;
+        if(new File(filePath).exists()) {
+            return filePath;
+        }
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = context.getContentResolver().openInputStream(uri);
+            out = new FileOutputStream(filePath);
+            byte[] tmp = new byte[2048];
+            int l;
+            while ((l = in.read(tmp)) != -1) {
+                out.write(tmp, 0, l);
+            }
+            EMLog.d(TAG, "other fileProvider file path = "+filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+                if(out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new File(filePath).exists() ? filePath : "";
     }
 
     /**
@@ -600,8 +652,30 @@ public class EaseCompat {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
+    /**
+     * 是否是本app的FileProvider
+     * @param context
+     * @param uri
+     * @return
+     */
     public static boolean isFileProvider(Context context, Uri uri) {
         return (context.getApplicationInfo().packageName + ".fileProvider").equalsIgnoreCase(uri.getAuthority());
     }
 
+    /**
+     * 其他app分享过来的FileProvider
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static boolean isOtherFileProvider(Context context, Uri uri) {
+        String scheme = uri.getScheme();
+        String authority = uri.getAuthority();
+        if(TextUtils.isEmpty(scheme) || TextUtils.isEmpty(authority)) {
+            return false;
+        }
+        return !(context.getApplicationInfo().packageName + ".fileProvider").equalsIgnoreCase(uri.getAuthority())
+                && "content".equalsIgnoreCase(uri.getScheme())
+                && authority.contains(".fileProvider".toLowerCase());
+    }
 }
