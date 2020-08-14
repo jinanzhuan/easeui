@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -28,6 +27,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
+import com.hyphenate.easeui.interfaces.OnItemClickListener;
 import com.hyphenate.easeui.manager.EaseConTypeSetManager;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -37,7 +37,7 @@ import java.util.List;
 public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshLayout.OnRefreshListener {
     private Context context;
     private SwipeRefreshLayout srlRefresh;
-    private EaseRecyclerView messageList;
+    private RecyclerView messageList;
     private EaseMessageListItemStyle itemStyle;
     private int chatType;
     private String toChatUsername;
@@ -131,6 +131,11 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
                     if(listener != null) {
                         listener.onLoadMore();
                     }
+                }else {
+                    //if recyclerView not idle should hide keyboard
+                    if(listener != null) {
+                        listener.onViewDragging();
+                    }
                 }
             }
         });
@@ -151,14 +156,15 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
                 recyclerViewLastHeight = height;
             }
         });
-    }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(this.listener != null) {
-            this.listener.onTouch(this, ev);
-        }
-        return super.dispatchTouchEvent(ev);
+        messageAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if(listener != null) {
+                    listener.onTouchItemOutside(view, position);
+                }
+            }
+        });
     }
 
     /**
@@ -532,9 +538,9 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
         /**
          * touch事件
          * @param v
-         * @param event
+         * @param position
          */
-        void onTouch(View v, MotionEvent event);
+        void onTouchItemOutside(View v, int position);
 
         /**
          * 下拉刷新
@@ -551,6 +557,11 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
          * 上拉加载更多
          */
         void onLoadMore();
+
+        /**
+         * 控件正在被拖拽
+         */
+        void onViewDragging();
     }
 
     /**

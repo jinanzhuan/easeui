@@ -246,10 +246,10 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     /**
      * {@link EaseChatMessageList#setOnMessageListListener(EaseChatMessageList.OnMessageListListener)}
      * @param v
-     * @param event
+     * @param position
      */
     @Override
-    public void onTouch(View v, MotionEvent event) {
+    public void onTouchItemOutside(View v, int position) {
         hideKeyboard();
         inputMenu.hideExtendMenuContainer();
     }
@@ -277,6 +277,12 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     @Override
     public void onLoadMore() {
         chatMessageList.loadMoreHistoryMessages(PAGE_SIZE, EMConversation.EMSearchDirection.DOWN);
+    }
+
+    @Override
+    public void onViewDragging() {
+        hideKeyboard();
+        inputMenu.hideExtendMenuContainer();
     }
 
     /**

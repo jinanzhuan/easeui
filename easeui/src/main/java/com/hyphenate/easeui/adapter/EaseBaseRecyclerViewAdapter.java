@@ -47,19 +47,23 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
         if(mData == null || mData.isEmpty()) {
             return;
         }
-        T item = mData.get(position);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                itemClickAction(v, position);
-            }
-        });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return itemLongClickAction(v, position);
-            }
-        });
+        T item = getItem(position);
+        if(isItemClickEnable()) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemClickAction(v, position);
+                }
+            });
+        }
+        if(isItemLongClickEnable()) {
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return itemLongClickAction(v, position);
+                }
+            });
+        }
         holder.setData(item, position);
         holder.setDataList(mData, position);
     }
@@ -79,6 +83,24 @@ public abstract class EaseBaseRecyclerViewAdapter<T> extends EaseBaseAdapter<Eas
     @Override
     public int getItemViewType(int position) {
         return (mData == null || mData.isEmpty()) ? VIEW_TYPE_EMPTY : VIEW_TYPE_ITEM;
+    }
+
+    /**
+     * 条目单击事件是否可用
+     * 默认为true，如果需要自己设置请设置为false
+     * @return
+     */
+    public boolean isItemClickEnable() {
+        return true;
+    }
+
+    /**
+     * 条目长按事件是否可用
+     * 默认为true
+     * @return
+     */
+    public boolean isItemLongClickEnable() {
+        return true;
     }
 
 
