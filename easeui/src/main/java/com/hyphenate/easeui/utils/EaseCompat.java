@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.R;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
@@ -59,6 +60,98 @@ public class EaseCompat {
         }
         intent.setType("image/*");
         context.startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * take picture by set file path
+     * @param context
+     * @param requestCode
+     * @return
+     */
+    public static File takePicture(Activity context, int requestCode) {
+        if(!EaseCommonUtils.isSdcardExist()) {
+            return null;
+        }
+        File cameraFile = getCameraFile();
+        Intent intent = getCameraIntent(context, cameraFile);
+        context.startActivityForResult(intent, requestCode);
+        return cameraFile;
+    }
+
+    /**
+     * take picture by set file path
+     * @param context
+     * @param requestCode
+     * @return
+     */
+    public static File takePicture(Fragment context, int requestCode) {
+        if(!EaseCommonUtils.isSdcardExist()) {
+            return null;
+        }
+        File cameraFile = getCameraFile();
+        Intent intent = getCameraIntent(context.getContext(), cameraFile);
+        context.startActivityForResult(intent, requestCode);
+        return cameraFile;
+    }
+
+    /**
+     * take video capture by set file path
+     * @param context
+     * @param requestCode
+     * @return
+     */
+    public static File takeVideo(Activity context, int requestCode) {
+        if(!EaseCommonUtils.isSdcardExist()) {
+            return null;
+        }
+        File videoFile = getVideoFile();
+        Intent intent = getVideoIntent(context, videoFile);
+        context.startActivityForResult(intent, requestCode);
+        return videoFile;
+    }
+
+    /**
+     * take video capture by set file path
+     * @param context
+     * @param requestCode
+     * @return
+     */
+    public static File takeVideo(Fragment context, int requestCode) {
+        if(!EaseCommonUtils.isSdcardExist()) {
+            return null;
+        }
+        File videoFile = getVideoFile();
+        Intent intent = getVideoIntent(context.getContext(), videoFile);
+        context.startActivityForResult(intent, requestCode);
+        return videoFile;
+    }
+
+    private static Intent getCameraIntent(Context context, File cameraFile) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(context, cameraFile));
+        return intent;
+    }
+
+    private static File getCameraFile() {
+        File cameraFile = new File(PathUtil.getInstance().getImagePath()
+                , EMClient.getInstance().getCurrentUser() + System.currentTimeMillis() + ".jpg");
+        //noinspection ResultOfMethodCallIgnored
+        cameraFile.getParentFile().mkdirs();
+        return cameraFile;
+    }
+
+    private static Intent getVideoIntent(Context context, File videoFile) {
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(context, videoFile));
+        return intent;
+    }
+
+    private static File getVideoFile() {
+        File videoFile = new File(PathUtil.getInstance().getVideoPath()
+                , System.currentTimeMillis() + ".mp4");
+        //noinspection ResultOfMethodCallIgnored
+        videoFile.getParentFile().mkdirs();
+        return videoFile;
     }
 
     /**

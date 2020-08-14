@@ -28,14 +28,23 @@ public class EaseShowLocalVideoActivity extends EaseBaseActivity implements Easy
         super.onCreate(arg0);
         setContentView(R.layout.ease_activity_show_local_video);
         setFitSystemForTheme(false, R.color.transparent, false);
-        initIntent();
+        initIntent(getIntent());
         initView();
         initListener();
         initData();
     }
 
-    public void initIntent() {
-        String path = getIntent().getStringExtra("path");
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        initIntent(intent);
+        if(uri != null) {
+            evpPlayer.setSource(uri);
+        }
+    }
+
+    public void initIntent(Intent intent) {
+        String path = intent.getStringExtra("path");
         if(!TextUtils.isEmpty(path)) {
             uri = Uri.parse(path);
         }
@@ -108,7 +117,7 @@ public class EaseShowLocalVideoActivity extends EaseBaseActivity implements Easy
 
     @Override
     public void onCompletion(EasyVideoPlayer player) {
-
+        finish();
     }
 
     @Override

@@ -9,4 +9,5 @@ public class VideoEntity {
 	public int size;
 	public int duration;
 	public Uri uri;
+	public long lastModified;
 }
