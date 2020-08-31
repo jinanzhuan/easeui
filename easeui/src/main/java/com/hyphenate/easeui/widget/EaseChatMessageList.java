@@ -124,10 +124,10 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE
+                        && isHistoryStatus
                         && status == loadMoreStatus.HAS_MORE
                         && layoutManager.findLastVisibleItemPosition() != 0
                         && layoutManager.findLastVisibleItemPosition() == layoutManager.getItemCount() -1){
-                    //showLiveList(true);
                     if(listener != null) {
                         listener.onLoadMore();
                     }

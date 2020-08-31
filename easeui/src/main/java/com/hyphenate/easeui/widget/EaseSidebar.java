@@ -127,6 +127,8 @@ public class EaseSidebar extends View{
 			if(sections.length * textItemHeight > mHeight) {
 				mTextCoefficient = mHeight / (sections.length * textItemHeight);
 				paint.setTextSize(paint.getTextSize() * mTextCoefficient);
+			}else {
+				paint.setTextSize(mTextSize);
 			}
 		}
 	}

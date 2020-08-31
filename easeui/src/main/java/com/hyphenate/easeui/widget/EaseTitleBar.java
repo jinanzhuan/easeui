@@ -256,6 +256,10 @@ public class EaseTitleBar extends RelativeLayout implements View.OnClickListener
         return titleMenu;
     }
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.left_layout) {

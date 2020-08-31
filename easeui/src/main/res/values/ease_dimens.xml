@@ -17,4 +17,5 @@
     <dimen name="ease_chat_primary_menu_send_icon_height_size">30dp</dimen>
 
     <dimen name="ease_chat_image_corner_radius">8dp</dimen>
+    <dimen name="ease_chat_primary_margin_right">16sp</dimen>
 </resources>
