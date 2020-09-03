@@ -43,39 +43,25 @@ public class EaseChatRowLocation extends EaseChatRow {
     }
 
     @Override
-    protected void onViewUpdate(EMMessage msg) {
-        switch (msg.status()) {
-            case CREATE:
-                onMessageCreate();
-                break;
-            case SUCCESS:
-                onMessageSuccess();
-                break;
-            case FAIL:
-                onMessageError();
-                break;
-            case INPROGRESS:
-                onMessageInProgress();
-                break;
-        }
-    }
-
-    private void onMessageCreate() {
+    protected void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 
-    private void onMessageSuccess() {
+    @Override
+    protected void onMessageSuccess() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
     }
 
-    private void onMessageError() {
+    @Override
+    protected void onMessageError() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.VISIBLE);
     }
 
-    private void onMessageInProgress() {
+    @Override
+    protected void onMessageInProgress() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }

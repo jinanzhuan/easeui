@@ -51,7 +51,17 @@
         <item name="android:layout_height">@dimen/size_avatar</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginRight">@dimen/margin_chat_activity</item>
+        <item name="android:layout_marginRight">@dimen/ease_chat_avatar_margin</item>
+        <item name="android:src">@drawable/ease_default_avatar</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="ease_row_receive_iv_userhead_style">
+        <item name="android:layout_width">@dimen/size_avatar</item>
+        <item name="android:layout_height">@dimen/size_avatar</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginLeft">@dimen/ease_chat_avatar_margin</item>
         <item name="android:src">@drawable/ease_default_avatar</item>
         <item name="android:scaleType">fitXY</item>
     </style>

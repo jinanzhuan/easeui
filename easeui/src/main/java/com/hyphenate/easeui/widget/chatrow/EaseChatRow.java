@@ -2,9 +2,15 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
@@ -26,6 +33,7 @@ import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
+import com.hyphenate.util.EMLog;
 
 import java.util.Date;
 
@@ -36,7 +44,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected static final String TAG = EaseChatRow.class.getSimpleName();
 
     protected LayoutInflater inflater;
-    protected Activity context;
+    protected Context context;
     /**
      * ListView's adapter or RecyclerView's adapter
      */
@@ -87,6 +95,14 @@ public abstract class EaseChatRow extends LinearLayout {
      * if is sender
      */
     protected boolean isSender;
+    /**
+     * chat message callback
+     */
+    protected EaseChatCallback chatCallback;
+    /**
+     * switch to main thread
+     */
+    private Handler mainThreadHandler;
 
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
@@ -94,7 +110,7 @@ public abstract class EaseChatRow extends LinearLayout {
 
     public EaseChatRow(Context context, boolean isSender) {
         super(context);
-        this.context = (Activity) context;
+        this.context = context;
         this.isSender = isSender;
         this.inflater = LayoutInflater.from(context);
 
@@ -103,7 +119,7 @@ public abstract class EaseChatRow extends LinearLayout {
 
     public EaseChatRow(Context context, EMMessage message, int position, Object adapter) {
         super(context);
-        this.context = (Activity) context;
+        this.context = context;
         this.message = message;
         this.isSender = message.direct() == Direct.SEND;
         this.position = position;
@@ -131,6 +147,7 @@ public abstract class EaseChatRow extends LinearLayout {
         ackedView = (TextView) findViewById(R.id.tv_ack);
         deliveredView = (TextView) findViewById(R.id.tv_delivered);
 
+        mainThreadHandler = new Handler(Looper.getMainLooper());
         onFindViewById();
     }
 
@@ -139,7 +156,11 @@ public abstract class EaseChatRow extends LinearLayout {
      * @param msg
      */
     public void updateView(final EMMessage msg) {
-        context.runOnUiThread(new Runnable() {
+        if(chatCallback == null) {
+            chatCallback = new EaseChatCallback();
+        }
+        msg.setMessageStatusCallback(chatCallback);
+        mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
                 onViewUpdate(msg);
@@ -325,6 +346,7 @@ public abstract class EaseChatRow extends LinearLayout {
      * set click listener
      */
     private void setClickListener() {
+        chatCallback = new EaseChatCallback();
         if(bubbleLayout != null){
             bubbleLayout.setOnClickListener(new OnClickListener() {
     
@@ -399,6 +421,102 @@ public abstract class EaseChatRow extends LinearLayout {
     }
 
     /**
+     * refresh view when message status change
+     */
+    protected void onViewUpdate(EMMessage msg) {
+        switch (msg.status()) {
+            case CREATE:
+                onMessageCreate();
+                if(itemClickListener != null) {
+                    itemClickListener.onMessageCreate(msg);
+                }
+                break;
+            case SUCCESS:
+                onMessageSuccess();
+                break;
+            case FAIL:
+                onMessageError();
+                break;
+            case INPROGRESS:
+                onMessageInProgress();
+                break;
+            default:
+                EMLog.i(TAG, "default");
+                break;
+        }
+    }
+
+    private class EaseChatCallback implements EMCallBack {
+
+        @Override
+        public void onSuccess() {
+            mainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onMessageSuccess();
+                    if(itemClickListener != null) {
+                        itemClickListener.onMessageSuccess(message);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(int code, String error) {
+            mainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onMessageError();
+                    if(itemClickListener != null) {
+                        itemClickListener.onMessageError(message, code, error);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onProgress(int progress, String status) {
+            mainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onMessageInProgress();
+                    if(itemClickListener != null) {
+                        itemClickListener.onMessageInProgress(message, progress);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * message create status
+     */
+    protected void onMessageCreate() {
+        EMLog.i(TAG, "onMessageCreate");
+    }
+
+    /**
+     * message success status
+     */
+    protected void onMessageSuccess() {
+        EMLog.i(TAG, "onMessageSuccess");
+    }
+
+    /**
+     * message fail status
+     */
+    protected void onMessageError() {
+        EMLog.e(TAG, "onMessageError");
+    }
+
+    /**
+     * message in progress status
+     */
+    protected void onMessageInProgress() {
+        EMLog.i(TAG, "onMessageInProgress");
+    }
+
+    /**
      * inflate view, child should implement it
      */
     protected abstract void onInflateView();
@@ -407,11 +525,6 @@ public abstract class EaseChatRow extends LinearLayout {
      * find view by id
      */
     protected abstract void onFindViewById();
-
-    /**
-     * refresh view when message status change
-     */
-    protected abstract void onViewUpdate(EMMessage msg);
 
     /**
      * setup view

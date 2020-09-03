@@ -15,6 +15,7 @@ package com.hyphenate.easeui.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -24,13 +25,18 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessageBody;
 import com.hyphenate.chat.EMVideoMessageBody;
+import com.hyphenate.easeui.R;
 import com.hyphenate.util.EMLog;
+import com.hyphenate.util.ImageUtils;
 import com.hyphenate.util.PathUtil;
 import com.hyphenate.util.UriUtils;
+
+import java.io.IOException;
 
 public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 	
@@ -120,6 +126,19 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		if(!UriUtils.isFileExistByUri(context, imageUri)) {
 			imageUri = ((EMImageMessageBody) body).thumbnailLocalUri();
 		}
+		//图片附件上传之前从消息体中获取不到图片的长和宽
+		if(width == 0 || height == 0) {
+			BitmapFactory.Options options = null;
+			try {
+				options = ImageUtils.getBitmapOptions(context, imageUri);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if(options != null) {
+			    width = options.outWidth;
+			    height = options.outHeight;
+			}
+		}
 		//获取图片服务器地址
 		String thumbnailUrl = ((EMImageMessageBody) body).getThumbnailUrl();
 		return showImage(context, imageView, imageUri, thumbnailUrl, width, height);
@@ -182,7 +201,13 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 				params.height = (int) (maxWidth / radio);
 			}
 		}
-		Glide.with(context).load(imageUri == null ? imageUrl : imageUri).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+		Glide.with(context)
+				.load(imageUri == null ? imageUrl : imageUri)
+				.apply(new RequestOptions()
+						.placeholder(R.drawable.ease_default_image)
+						.error(R.drawable.ease_default_image))
+				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.into(imageView);
 		return params;
 	}
 

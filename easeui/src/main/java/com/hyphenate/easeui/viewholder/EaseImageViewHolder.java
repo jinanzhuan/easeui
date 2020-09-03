@@ -82,22 +82,5 @@ public class EaseImageViewHolder extends EaseChatRowViewHolder {
     protected void handleReceiveMessage(EMMessage message) {
         super.handleReceiveMessage(message);
         getChatRow().updateView(message);
-
-        message.setMessageStatusCallback(new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                getChatRow().updateView(message);
-            }
-
-            @Override
-            public void onError(int code, String error) {
-                getChatRow().updateView(message);
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-                getChatRow().updateView(message);
-            }
-        });
     }
 }

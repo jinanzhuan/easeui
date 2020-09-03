@@ -233,6 +233,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 listener.onEditTextClicked();
         } else if (id == R.id.rl_face) {
             toggleFaceImage();
+            setModeKeyboard();
             buttonMore.setChecked(false);
             if(listener != null){
                 listener.onToggleEmojiconClicked();

@@ -43,8 +43,29 @@ public interface MessageListItemClickListener{
 	void onUserAvatarLongClick(String username);
 
 	/**
-	 * message in sending progress
+	 * message is create status
 	 * @param message
 	 */
-	void onMessageInProgress(EMMessage message);
+	void onMessageCreate(EMMessage message);
+
+	/**
+	 * message send success
+	 * @param message
+	 */
+	void onMessageSuccess(EMMessage message);
+
+	/**
+	 * message send fail
+	 * @param message
+	 * @param code
+	 * @param error
+	 */
+	void onMessageError(EMMessage message, int code, String error);
+
+	/**
+	 * message in sending progress
+	 * @param message
+	 * @param progress
+	 */
+	void onMessageInProgress(EMMessage message, int progress);
 }

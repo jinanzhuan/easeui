@@ -43,28 +43,12 @@ public class EaseChatRowText extends EaseChatRow {
     }
 
     @Override
-    protected void onViewUpdate(EMMessage msg) {
-        switch (msg.status()) {
-            case CREATE:
-                onMessageCreate();
-                break;
-            case SUCCESS:
-                onMessageSuccess();
-                break;
-            case FAIL:
-                onMessageError();
-                break;
-            case INPROGRESS:
-                onMessageInProgress();
-                break;
-        }
-    }
-
-    private void onMessageCreate() {
+    protected void onMessageCreate() {
         setStatus(View.VISIBLE, View.GONE);
     }
 
-    private void onMessageSuccess() {
+    @Override
+    protected void onMessageSuccess() {
         setStatus(View.GONE, View.GONE);
 
         // Show "1 Read" if this msg is a ding-type msg.
@@ -78,11 +62,13 @@ public class EaseChatRowText extends EaseChatRow {
         EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
     }
 
-    private void onMessageError() {
+    @Override
+    protected void onMessageError() {
         setStatus(View.GONE, View.VISIBLE);
     }
 
-    private void onMessageInProgress() {
+    @Override
+    protected void onMessageInProgress() {
         setStatus(View.VISIBLE, View.GONE);
     }
 

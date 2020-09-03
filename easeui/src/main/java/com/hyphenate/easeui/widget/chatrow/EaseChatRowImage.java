@@ -60,6 +60,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
         imgBody = (EMImageMessageBody) message.getBody();
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
+            imageView.setImageResource(R.drawable.ease_default_image);
             return;
         }
         showImageView(message);
@@ -67,49 +68,28 @@ public class EaseChatRowImage extends EaseChatRowFile {
 
     @Override
     protected void onViewUpdate(EMMessage msg) {
-        if (msg.direct() == EMMessage.Direct.SEND) {
-            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                super.onViewUpdate(msg);
-            }else{
-                if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                        imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
-                        imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    percentageView.setVisibility(View.INVISIBLE);
-                    imageView.setImageResource(R.drawable.ease_default_image);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                    percentageView.setVisibility(View.GONE);
-                    imageView.setImageResource(R.drawable.ease_default_image);
-                    showImageView(message);
-                }
-            }
-            return;
-        }
+        super.onViewUpdate(msg);
+        //此方法中省略掉了之前的有关非自动下载缩略图后展示图片的逻辑
+    }
 
-        // received messages
-        if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
-                imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
+    @Override
+    protected void onMessageSuccess() {
+        super.onMessageSuccess();
+        //即使是sender，发送成功后也要在执行，防止出现图片尺寸不对的问题
+        showImageView(message);
+    }
+
+    @Override
+    protected void onMessageInProgress() {
+        if(isSender) {
+            super.onMessageInProgress();
+        }else {
             if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
                 imageView.setImageResource(R.drawable.ease_default_image);
             }else {
                 progressBar.setVisibility(View.INVISIBLE);
                 percentageView.setVisibility(View.INVISIBLE);
-                imageView.setImageResource(R.drawable.ease_default_image);
             }
-        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                progressBar.setVisibility(View.VISIBLE);
-                percentageView.setVisibility(View.VISIBLE);
-            }else {
-                progressBar.setVisibility(View.INVISIBLE);
-                percentageView.setVisibility(View.INVISIBLE);
-            }
-        } else {
-            progressBar.setVisibility(View.GONE);
-            percentageView.setVisibility(View.GONE);
-            imageView.setImageResource(R.drawable.ease_default_image);
-            showImageView(message);
         }
     }
 

@@ -42,24 +42,6 @@ public class EaseChatRowCustom extends EaseChatRow {
         contentView.setText(msg);
     }
 
-    @Override
-    protected void onViewUpdate(EMMessage msg) {
-        switch (msg.status()) {
-            case CREATE:
-                onMessageCreate();
-                break;
-            case SUCCESS:
-                onMessageSuccess();
-                break;
-            case FAIL:
-                onMessageError();
-                break;
-            case INPROGRESS:
-                onMessageInProgress();
-                break;
-        }
-    }
-
     public void onAckUserUpdate(final int count) {
         if (ackedView != null) {
             ackedView.post(new Runnable() {
@@ -72,12 +54,14 @@ public class EaseChatRowCustom extends EaseChatRow {
         }
     }
 
-    private void onMessageCreate() {
+    @Override
+    protected void onMessageCreate() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 
-    private void onMessageSuccess() {
+    @Override
+    protected void onMessageSuccess() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
 
@@ -92,12 +76,14 @@ public class EaseChatRowCustom extends EaseChatRow {
         EaseDingMessageHelper.get().setUserUpdateListener(message, userUpdateListener);
     }
 
-    private void onMessageError() {
+    @Override
+    protected void onMessageError() {
         progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.VISIBLE);
     }
 
-    private void onMessageInProgress() {
+    @Override
+    protected void onMessageInProgress() {
         progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }

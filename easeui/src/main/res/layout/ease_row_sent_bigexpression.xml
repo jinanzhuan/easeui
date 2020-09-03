@@ -25,7 +25,7 @@
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/margin_chat_activity"
+            android:layout_marginRight="@dimen/ease_chat_bubble_margin_avatar"
             android:layout_toLeftOf="@id/iv_userhead" >
 
             <ImageView
@@ -41,16 +41,15 @@
             android:id="@+id/ll_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_toLeftOf="@id/bubble"
             android:gravity="center"
             android:orientation="vertical" >
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                style="@android:style/Widget.Holo.Light.ProgressBar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:visibility="visible" />
 
         </LinearLayout>

@@ -69,7 +69,7 @@ import java.util.List;
 public class EaseChatFragment extends EaseBaseFragment implements View.OnClickListener,
         EaseChatInputMenu.ChatInputMenuListener,
         EaseChatExtendMenu.EaseChatExtendMenuItemClickListener, MessageListItemClickListener,
-        EMCallBack, EMMessageListener, TextWatcher, EaseChatMessageList.OnMessageListListener {
+        EMMessageListener, TextWatcher, EaseChatMessageList.OnMessageListListener {
 
     private static final String TAG = EaseChatFragment.class.getSimpleName();
 
@@ -207,6 +207,26 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
 
     protected void refreshMessages() {
         chatMessageList.refreshMessages();
+    }
+
+    /**
+     * 用于刷新已存在的消息集合
+     * @param messages
+     */
+    protected void refreshMessages(List<EMMessage> messages) {
+        if(messages != null && !messages.isEmpty()) {
+            for (EMMessage message: messages) {
+                refreshMessage(message);
+            }
+        }
+    }
+
+    /**
+     * 用于刷新已存在的消息
+     * @param message
+     */
+    protected void refreshMessage(EMMessage message) {
+        chatMessageList.refreshMessage(message);
     }
 
     private void setMessageClickListener() {
@@ -392,39 +412,30 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         inputAtUsername(username, true);
     }
 
-    /**
-     * MessageListItemClickListener
-     * @param message
-     */
     @Override
-    public void onMessageInProgress(EMMessage message) {
-        message.setMessageStatusCallback(this);
+    public void onMessageCreate(EMMessage message) {
+        //发送失败的消息再次进行发送
+        // send message
+        sendMessage(message);
     }
 
-    /**
-     * message status callback
-     */
     @Override
-    public void onSuccess() {
+    public void onMessageSuccess(EMMessage message) {
         if(messageChangeListener != null) {
             EaseEvent event = EaseEvent.create(EaseConstant.MESSAGE_CHANGE_SEND_SUCCESS, EaseEvent.TYPE.MESSAGE);
             messageChangeListener.onMessageChange(event);
         }
-        EMLog.i(TAG, "send message success");
-        refreshMessages();
+
+        EMLog.i(TAG, "send message onMessageSuccess");
     }
 
-    /**
-     * message status callback
-     */
     @Override
-    public void onError(int code, String error) {
+    public void onMessageError(EMMessage message, int code, String error) {
         if(messageChangeListener != null) {
             EaseEvent event = EaseEvent.create(EaseConstant.MESSAGE_CHANGE_SEND_ERROR, EaseEvent.TYPE.MESSAGE);
             messageChangeListener.onMessageChange(event);
         }
-        EMLog.i(TAG, "send message error = "+error);
-        refreshMessages();
+        EMLog.i(TAG, "send message onMessageError = "+error);
         if(getActivity() != null && !getActivity().isFinishing()) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -436,16 +447,16 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     }
 
     /**
-     * message status callback
+     * MessageListItemClickListener
+     * @param progress
      */
     @Override
-    public void onProgress(int progress, String status) {
+    public void onMessageInProgress(EMMessage message, int progress) {
         if(messageChangeListener != null) {
             EaseEvent event = EaseEvent.create(EaseConstant.MESSAGE_CHANGE_SEND_PROGRESS, EaseEvent.TYPE.MESSAGE);
             messageChangeListener.onMessageChange(event);
         }
         EMLog.i(TAG, "send message on progress");
-        refreshMessages();
     }
 
     /**
@@ -515,7 +526,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     @Override
     public void onMessageRead(List<EMMessage> messages) {
-        refreshMessages();
+        refreshMessages(messages);
     }
 
     /**
@@ -524,7 +535,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     @Override
     public void onMessageDelivered(List<EMMessage> messages) {
-        refreshMessages();
+        refreshMessages(messages);
     }
 
     /**
@@ -537,7 +548,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
             EaseEvent event = EaseEvent.create(EaseConstant.MESSAGE_CHANGE_RECALL, EaseEvent.TYPE.MESSAGE);
             messageChangeListener.onMessageChange(event);
         }
-        refreshMessages();
+        refreshMessages(messages);
     }
 
     /**
@@ -550,7 +561,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         if(messageChangeListener != null) {
             messageChangeListener.onMessageChange(EaseEvent.create(EaseConstant.MESSAGE_CHANGE_CHANGE, EaseEvent.TYPE.MESSAGE));
         }
-        refreshMessages();
+        refreshMessage(message);
     }
 
     /**
@@ -559,7 +570,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     @Override
     public void onGroupMessageRead(List<EMGroupReadAck> groupReadAcks) {
-        Log.e("TAG", "groupReadAcks.size = "+groupReadAcks.size());
+        EMLog.i(TAG, "groupReadAcks.size = "+groupReadAcks.size());
     }
 
     /**
@@ -913,12 +924,12 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
      */
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUsername);
-        Log.e("TAG", "current = "+EMClient.getInstance().getCurrentUser() + " to = "+toChatUsername);
+        EMLog.i(TAG, "current = "+EMClient.getInstance().getCurrentUser() + " to = "+toChatUsername);
         EMMessageBody body = message.getBody();
         String msgId = message.getMsgId();
         String from = message.getFrom();
-        Log.e("TAG", "body = "+body);
-        Log.e("TAG", "msgId = "+msgId + " from = "+from);
+        EMLog.i(TAG, "body = "+body);
+        EMLog.i(TAG, "msgId = "+msgId + " from = "+from);
         sendMessage(message);
     }
 
@@ -967,32 +978,6 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
             message.setChatType(EMMessage.ChatType.ChatRoom);
         }
-        message.setMessageStatusCallback(new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                EMLog.d("msg", "send message onSuccess");
-                if(chatMessageList != null) {
-                    chatMessageList.refreshMessages();
-                }
-            }
-
-            @Override
-            public void onError(int code, String error) {
-                EMLog.d("msg", "send message onError error code:"+code + " error message:"+error);
-                showMsgToast("error code:"+code+" error message:"+error);
-                if(chatMessageList != null) {
-                    chatMessageList.refreshMessages();
-                }
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-                EMLog.d("msg", "send message onProgress");
-                if(chatMessageList != null) {
-                    chatMessageList.refreshMessages();
-                }
-            }
-        });
         // send message
         EMClient.getInstance().chatManager().sendMessage(message);
         // refresh messages

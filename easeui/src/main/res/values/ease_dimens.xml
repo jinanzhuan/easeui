@@ -18,4 +18,9 @@
 
     <dimen name="ease_chat_image_corner_radius">8dp</dimen>
     <dimen name="ease_chat_primary_margin_right">16sp</dimen>
+
+    <!--头像距离左边或者右边的距离-->
+    <dimen name="ease_chat_avatar_margin">18dp</dimen>
+    <!--内容布局距离头像的距离-->
+    <dimen name="ease_chat_bubble_margin_avatar">10dp</dimen>
 </resources>

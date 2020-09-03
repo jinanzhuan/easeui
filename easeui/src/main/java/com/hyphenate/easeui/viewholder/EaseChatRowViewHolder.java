@@ -89,13 +89,6 @@ public class EaseChatRowViewHolder extends EaseMessageAdapter.ViewHolder<EMMessa
     protected void handleSendMessage(final EMMessage message) {
         // Update the view according to the message current status.
         getChatRow().updateView(message);
-
-        if (message.status() == EMMessage.Status.INPROGRESS) {
-            EMLog.i("handleSendMessage", "Message is INPROGRESS");
-            if (this.mItemClickListener != null) {
-                this.mItemClickListener.onMessageInProgress(message);
-            }
-        }
     }
 
     /**

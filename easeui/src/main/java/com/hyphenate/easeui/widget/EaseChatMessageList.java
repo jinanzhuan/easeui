@@ -188,6 +188,32 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
     }
 
     /**
+     * 刷新已存在的消息
+     * @param message
+     */
+    public void refreshMessage(EMMessage message) {
+        if(isActivityDisable() || message == null || messageList == null || conversation == null) {
+            return;
+        }
+        messageList.post(()-> {
+            synchronized (EaseChatMessageList.class) {
+                if(messageAdapter != null) {
+                    List<EMMessage> messages = messageAdapter.getData();
+                    if(messages != null && !messages.isEmpty()) {
+                        for(int i = 0; i < messages.size(); i++) {
+                            if(TextUtils.equals(message.getMsgId(), messages.get(i).getMsgId())) {
+                                messageAdapter.notifyItemChanged(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+        });
+    }
+
+    /**
      * 刷新对话列表
      */
     public void refreshMessages() {

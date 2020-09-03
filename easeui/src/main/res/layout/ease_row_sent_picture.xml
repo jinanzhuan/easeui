@@ -51,16 +51,18 @@
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                style="@android:style/Widget.Holo.Light.ProgressBar"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:visibility="visible" />
 
             <TextView
                 android:id="@+id/percentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0%"
+                android:minWidth="40dp"
+                android:gravity="center"
+                tools:text="0%"
                 android:textColor="@android:color/black"
                 android:visibility="visible"
                 tools:ignore="HardcodedText" />
