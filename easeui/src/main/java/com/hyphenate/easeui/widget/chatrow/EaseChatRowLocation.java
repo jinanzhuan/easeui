@@ -2,19 +2,18 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMLocationMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.R;
-import com.hyphenate.util.LatLng;
 
 /**
  * location row
  */
 public class EaseChatRowLocation extends EaseChatRow {
     private TextView locationView;
+    private TextView tvLocationName;
     private EMLocationMessageBody locBody;
 
     public EaseChatRowLocation(Context context, boolean isSender) {
@@ -34,6 +33,7 @@ public class EaseChatRowLocation extends EaseChatRow {
     @Override
     protected void onFindViewById() {
     	locationView = (TextView) findViewById(R.id.tv_location);
+    	tvLocationName = findViewById(R.id.tv_location_name);
     }
 
     @Override
