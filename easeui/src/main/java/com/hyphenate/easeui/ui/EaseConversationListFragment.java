@@ -132,9 +132,6 @@ public class EaseConversationListFragment extends EaseBaseFragment implements Sw
         addDelegate();
         rvConversationList.setLayoutManager(new LinearLayoutManager(mContext));
         rvConversationList.setAdapter(listAdapter);
-        DividerItemDecoration decoration = new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL);
-        decoration.setDrawable(ContextCompat.getDrawable(mContext, R.drawable.ease_conversation_divider_list));
-        rvConversationList.addItemDecoration(decoration);
     }
 
     /**
