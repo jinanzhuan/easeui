@@ -5,10 +5,14 @@
     <dimen name="em_toolbar_title_right_size">16sp</dimen>
     <dimen name="ease_common_title_bar_height">44dp</dimen>
 
-    <dimen name="margin_chat_activity">5dp</dimen>
+    <dimen name="margin_chat_activity">10dp</dimen>
     <dimen name="size_avatar">48dp</dimen>
     <dimen name="chat_nick_margin_left">12dp</dimen>
     <dimen name="chat_nick_text_size">13sp</dimen>
+
+    <dimen name="ease_chat_file_icon_size">64dp</dimen>
+    <dimen name="ease_chat_file_icon_margin">8dp</dimen>
+    <dimen name="ease_chat_file_bubble_min_height">80dp</dimen>
 
     <dimen name="image_thumbnail_size">100dp</dimen>
     <dimen name="image_thumbnail_spacing">1dp</dimen>

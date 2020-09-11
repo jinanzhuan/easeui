@@ -26,9 +26,10 @@
             android:id="@+id/bubble"
             android:layout_width="200dp"
             android:layout_height="160dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
             android:orientation="vertical"
+            android:layout_marginLeft="3dp"
             android:background="@drawable/ease_chat_location_bubble_send_bg">
 
             <TextView
