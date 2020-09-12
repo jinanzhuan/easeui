@@ -157,7 +157,8 @@ public class RomUtils {
     }
 
     private static String getSystemProperty(String propName) {
-        return SystemProperties.get(propName, null);
+        return "";
+        //return SystemProperties.get(propName, null);
     }
 
     @RomName

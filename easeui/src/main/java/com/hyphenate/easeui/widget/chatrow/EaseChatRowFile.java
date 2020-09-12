@@ -1,8 +1,10 @@
 package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -10,8 +12,10 @@ import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.R;
+import com.hyphenate.easeui.utils.EaseEditTextUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.TextFormater;
+import com.hyphenate.util.UriUtils;
 
 import java.io.File;
 
@@ -59,12 +63,18 @@ public class EaseChatRowFile extends EaseChatRow {
 	@Override
 	protected void onSetUpView() {
 	    fileMessageBody = (EMNormalFileMessageBody) message.getBody();
-        String filePath = fileMessageBody.getLocalUrl();
+        Uri filePath = fileMessageBody.getLocalUri();
         fileNameView.setText(fileMessageBody.getFileName());
+        fileNameView.post(()-> {
+            String content = EaseEditTextUtils.ellipsizeMiddleString(fileNameView,
+                        fileMessageBody.getFileName(),
+                        fileNameView.getMaxLines(),
+                        fileNameView.getWidth() - fileNameView.getPaddingLeft() - fileNameView.getPaddingRight());
+            fileNameView.setText(content);
+        });
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            File file = new File(filePath);
-            if (file.exists()) {
+            if (UriUtils.isFileExistByUri(context, filePath)) {
                 fileStateView.setText(R.string.have_downloaded);
             } else {
                 fileStateView.setText(R.string.did_not_download);

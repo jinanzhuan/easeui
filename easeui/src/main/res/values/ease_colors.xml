@@ -16,6 +16,7 @@
 
     <color name="voip_interface_text_color">#bababa</color>
 
+    <color name="em_color_brand">#ff04aef0</color>
     <color name="em_chat_bg">#fff2f2f2</color>
     <color name="em_toolbar_color_title">@color/black</color>
     <color name="em_toolbar_color_title_right">@color/black</color>

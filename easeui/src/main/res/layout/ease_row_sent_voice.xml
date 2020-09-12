@@ -28,7 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/iv_userhead"
             android:layout_marginRight="10dp"
-             android:background="@drawable/ease_chatto_bg"
+            android:minHeight="38dp"
+             android:background="@drawable/ease_chat_bubble_send_bg"
             >
 	        <ImageView
 	            android:id="@+id/iv_voice"
