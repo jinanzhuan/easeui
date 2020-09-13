@@ -98,7 +98,7 @@ public class ConversationDelegate extends EaseBaseDelegate<EMConversation, Conve
                 EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                 name.setText(group != null ? group.getGroupName() : username);
             }else if(item.getType() == EMConversation.EMConversationType.ChatRoom) {
-                avatar.setImageResource(R.drawable.ease_group_icon);
+                avatar.setImageResource(R.drawable.ease_chat_room_icon);
                 EMChatRoom chatRoom = EMClient.getInstance().chatroomManager().getChatRoom(username);
                 name.setText(chatRoom != null && !TextUtils.isEmpty(chatRoom.getName()) ? chatRoom.getName() : username);
             }else {
