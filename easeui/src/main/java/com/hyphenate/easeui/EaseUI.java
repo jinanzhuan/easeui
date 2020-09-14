@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.manager.EaseChatPresenter;
@@ -152,6 +153,9 @@ public class EaseUI {
      * @return
      */
     public EaseSettingsProvider getSettingsProvider() {
+        if(settingsProvider == null) {
+            settingsProvider = getDefaultSettingsProvider();
+        }
         return settingsProvider;
     }
 
@@ -206,5 +210,29 @@ public class EaseUI {
 
     public Context getContext() {
         return appContext;
+    }
+
+    private EaseSettingsProvider getDefaultSettingsProvider() {
+        return new EaseSettingsProvider() {
+            @Override
+            public boolean isMsgNotifyAllowed(EMMessage message) {
+                return false;
+            }
+
+            @Override
+            public boolean isMsgSoundAllowed(EMMessage message) {
+                return false;
+            }
+
+            @Override
+            public boolean isMsgVibrateAllowed(EMMessage message) {
+                return false;
+            }
+
+            @Override
+            public boolean isSpeakerOpened() {
+                return false;
+            }
+        };
     }
 }
