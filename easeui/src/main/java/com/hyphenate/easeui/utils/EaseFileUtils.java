@@ -87,7 +87,7 @@ public class EaseFileUtils {
             return "";
         }
 
-        return UriUtils.getFileMimeType(context, fileUri);
+        return UriUtils.getFilenameByDocument(context, fileUri);
     }
 
     /**
