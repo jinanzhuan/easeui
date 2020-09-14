@@ -73,6 +73,14 @@ public class EaseChatRowFile extends EaseChatRow {
             fileNameView.setText(content);
         });
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+        if (message.direct() == EMMessage.Direct.SEND){
+            if (UriUtils.isFileExistByUri(context, filePath)
+                    && message.status() == EMMessage.Status.SUCCESS) {
+                fileStateView.setText(R.string.have_uploaded);
+            }else {
+                fileStateView.setText("");
+            }
+        }
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (UriUtils.isFileExistByUri(context, filePath)) {
                 fileStateView.setText(R.string.have_downloaded);
@@ -100,6 +108,10 @@ public class EaseChatRowFile extends EaseChatRow {
             percentageView.setVisibility(View.INVISIBLE);
         if (statusView != null)
             statusView.setVisibility(View.INVISIBLE);
+        if (message.direct() == EMMessage.Direct.SEND)
+            if(fileStateView != null) {
+                fileStateView.setText(R.string.have_uploaded);
+            }
     }
 
     @Override

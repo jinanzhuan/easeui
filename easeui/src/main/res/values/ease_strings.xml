@@ -20,6 +20,7 @@
     <string name="not_download">未下载:</string>
     <string name="have_downloaded">已下载</string>
     <string name="did_not_download">未下载</string>
+    <string name="have_uploaded">已上传</string>
     <string name="downwaiting">正在下载文件请稍后</string>
     <string name="Failed_to_download_file">下载文件失败:</string>
     <string name="File_expired">文件已过期:</string>

@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hyphenate.easeui.R;
+import com.hyphenate.util.EMLog;
 
 import androidx.core.content.ContextCompat;
 
@@ -148,8 +149,26 @@ public class EaseEditTextUtils {
         if(TextUtils.isEmpty(str) || width <= 0 || paint.measureText(str) < width) {
             return str;
         }
+        //检查是否需要进行省略
+        int startIndex = 0;
+        int maxNum = 0;
+        for(int i = 0; i < num; i++) {
+            if(startIndex < str.length()) {
+                maxNum += paint.breakText(str, startIndex, str.length(), true, width, null);
+                startIndex = maxNum - 1;
+            }
+        }
+        if(str.length() < maxNum) {
+            return str;
+        }
         //获取第num行占据的字符数目
-        int maxCount = textView.getLayout().getLineEnd(num - 1);
+        int maxCount = 0;
+        try {
+            maxCount = textView.getLayout().getLineEnd(num - 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return str;
+        }
         //如果不满num行
         if(str.length() < maxCount) {
             return str;
@@ -157,13 +176,14 @@ public class EaseEditTextUtils {
         //如果文件
         if(str.contains(".")) {
             int lastIndex = str.lastIndexOf(".");
-            String suffix = "..." + str.substring(lastIndex - 3);
+            String suffix = "..." + str.substring(lastIndex - 5);
             float requestWidth = paint.measureText(suffix);
             //对str取反
             String reverse = new StringBuilder(str.substring(0, maxCount)).reverse().toString();
             int takeUpCount = paint.breakText(reverse, 0, reverse.length(), true, requestWidth, null);
             takeUpCount = getTakeUpCount(paint, reverse, takeUpCount, requestWidth);
             str = str.substring(0, maxCount - takeUpCount) + suffix;
+            EMLog.i("EaseEditTextUtils", "last str = "+str);
         }
         return str;
     }
@@ -179,8 +199,8 @@ public class EaseEditTextUtils {
     private static int getTakeUpCount(Paint paint, String reverse, int takeUpCount, float requestWidth) {
         float measureWidth = paint.measureText(reverse.substring(0, takeUpCount));
         if(measureWidth <= requestWidth) {
-            getTakeUpCount(paint, reverse, takeUpCount + 1, requestWidth);
+            return getTakeUpCount(paint, reverse, takeUpCount + 1, requestWidth);
         }
-        return takeUpCount+1;
+        return takeUpCount + 1;
     }
 }
