@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 public class EaseBaseFragment extends Fragment {
     public Activity mContext;
     private Handler mainHandler;
+    public boolean onClickBackPress;//是否点击了返回操作
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -37,6 +38,7 @@ public class EaseBaseFragment extends Fragment {
      * back
      */
     public void onBackPress() {
+        onClickBackPress = true;
         mContext.onBackPressed();
     }
 
