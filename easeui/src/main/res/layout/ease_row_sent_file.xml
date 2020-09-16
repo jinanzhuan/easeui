@@ -135,9 +135,10 @@
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                style="@android:style/Widget.Holo.Light.ProgressBar"
+                style="?android:attr/progressBarStyle"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:indeterminateDrawable="@drawable/ease_chat_loading_progress_bar"
                 android:visibility="invisible" />
 
             <TextView
