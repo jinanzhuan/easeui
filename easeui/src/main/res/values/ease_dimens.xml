@@ -27,4 +27,6 @@
     <dimen name="ease_chat_avatar_margin">18dp</dimen>
     <!--内容布局距离头像的距离-->
     <dimen name="ease_chat_bubble_margin_avatar">10dp</dimen>
+    <!--已送达距离bubble的距离-->
+    <dimen name="ease_chat_ack_margin_bubble">5dp</dimen>
 </resources>

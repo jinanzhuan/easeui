@@ -87,6 +87,7 @@
             android:text="@string/text_ack_msg"
             android:textSize="12sp"
             android:layout_toLeftOf="@id/bubble"
+            android:layout_marginRight="@dimen/ease_chat_ack_margin_bubble"
             android:visibility="invisible"
             />
 
@@ -96,6 +97,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/bubble"
+            android:layout_marginRight="@dimen/ease_chat_ack_margin_bubble"
             android:text="@string/text_delivered_msg"
             android:textSize="12sp"
             android:visibility="invisible"
