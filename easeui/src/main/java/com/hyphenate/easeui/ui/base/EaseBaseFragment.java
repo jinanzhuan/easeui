@@ -12,10 +12,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.hyphenate.easeui.manager.EaseThreadManager;
+
 
 public class EaseBaseFragment extends Fragment {
     public Activity mContext;
-    private Handler mainHandler;
     public boolean onClickBackPress;//是否点击了返回操作
 
     @Override
@@ -72,10 +73,7 @@ public class EaseBaseFragment extends Fragment {
      * @param runnable
      */
     public void runOnUiThread(Runnable runnable) {
-        if(mainHandler == null) {
-            mainHandler = new Handler(Looper.getMainLooper());
-        }
-        mainHandler.post(runnable);
+        EaseThreadManager.getInstance().runOnMainThread(runnable);
     }
 
 }
