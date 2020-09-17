@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,7 +24,6 @@ import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
@@ -229,6 +227,14 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         chatMessageList.refreshMessage(message);
     }
 
+    /**
+     * 移除单条消息
+     * @param message
+     */
+    protected void removeMessage(EMMessage message) {
+        chatMessageList.removeMessage(message);
+    }
+
     private void setMessageClickListener() {
         if(chatMessageList != null) {
             chatMessageList.setItemClickListener(this);
@@ -252,7 +258,7 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
                 selectPicFromLocal();
                 break;
             case EaseChatInputMenu.ITEM_LOCATION :
-                EaseBaiduMapActivity.actionStartForResult(this, REQUEST_CODE_MAP);
+                startMapLocation(REQUEST_CODE_MAP);
                 break;
             case EaseChatInputMenu.ITEM_VIDEO:
                 selectVideoFromLocal();
@@ -772,6 +778,14 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
 //======================= choose resources start ============================
 
     /**
+     * 启动定位
+     * @param requestCode
+     */
+    protected void startMapLocation(int requestCode) {
+        EaseBaiduMapActivity.actionStartForResult(this, requestCode);
+    }
+
+    /**
      * select local video
      */
     protected void selectVideoFromLocal() {
@@ -826,6 +840,78 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
     }
 
 //====================================== choose resources end =================================
+
+//====================================== onActivityResult method start =================================
+
+    /**
+     * 本地文件选择结果处理
+     * @param data
+     */
+    protected void onActivityResultForLocalFiles(@Nullable Intent data) {
+        if (data != null) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                sendFileByUri(uri);
+            }
+        }
+    }
+
+    protected void onActivityResultForDingMsg(@Nullable Intent data) {
+        if(data != null) {
+            String msgContent = data.getStringExtra("msg");
+            EMLog.i(TAG, "To send the ding-type msg, content: " + msgContent);
+            // Send the ding-type msg.
+            EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUsername, msgContent);
+            sendMessage(dingMsg);
+        }
+    }
+
+    /**
+     * 地图定位结果处理
+     * @param data
+     */
+    protected void onActivityResultForMapLocation(@Nullable Intent data) {
+        if(data != null) {
+            double latitude = data.getDoubleExtra("latitude", 0);
+            double longitude = data.getDoubleExtra("longitude", 0);
+            String locationAddress = data.getStringExtra("address");
+            if (locationAddress != null && !locationAddress.equals("")) {
+                sendLocationMessage(latitude, longitude, locationAddress);
+            } else {
+                showMsgToast(getResources().getString(R.string.unable_to_get_loaction));
+            }
+        }
+    }
+
+    /**
+     * 选择本地图片处理结果
+     * @param data
+     */
+    protected void onActivityResultForLocalPhotos(@Nullable Intent data) {
+        if (data != null) {
+            Uri selectedImage = data.getData();
+            if (selectedImage != null) {
+                if(VersionUtils.isTargetQ(getContext())) {
+                    sendImageMessage(selectedImage);
+                }else {
+                    sendPicByUri(selectedImage);
+                }
+            }
+        }
+    }
+
+    /**
+     * 相机返回处理结果
+     * @param data
+     */
+    protected void onActivityResultForCamera(Intent data) {
+        if (cameraFile != null && cameraFile.exists()) {
+            sendImageMessage(cameraFile.getAbsolutePath());
+        }
+    }
+
+
+//====================================== onActivityResult method end =================================
 
 //==================================== send message start ======================================
     /**
@@ -1084,42 +1170,15 @@ public class EaseChatFragment extends EaseBaseFragment implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
-                if (cameraFile != null && cameraFile.exists())
-                    sendImageMessage(cameraFile.getAbsolutePath());
+                onActivityResultForCamera(data);
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
-                if (data != null) {
-                    Uri selectedImage = data.getData();
-                    if (selectedImage != null) {
-                        if(VersionUtils.isTargetQ(getContext())) {
-                            sendImageMessage(selectedImage);
-                        }else {
-                            sendPicByUri(selectedImage);
-                        }
-                    }
-                }
+                onActivityResultForLocalPhotos(data);
             } else if (requestCode == REQUEST_CODE_MAP) { // location
-                double latitude = data.getDoubleExtra("latitude", 0);
-                double longitude = data.getDoubleExtra("longitude", 0);
-                String locationAddress = data.getStringExtra("address");
-                if (locationAddress != null && !locationAddress.equals("")) {
-                    sendLocationMessage(latitude, longitude, locationAddress);
-                } else {
-                    showMsgToast(getResources().getString(R.string.unable_to_get_loaction));
-                }
-
+                onActivityResultForMapLocation(data);
             } else if (requestCode == REQUEST_CODE_DING_MSG) { // To send the ding-type msg.
-                String msgContent = data.getStringExtra("msg");
-                EMLog.i(TAG, "To send the ding-type msg, content: " + msgContent);
-                // Send the ding-type msg.
-                EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUsername, msgContent);
-                sendMessage(dingMsg);
+                onActivityResultForDingMsg(data);
             }else if(requestCode == REQUEST_CODE_SELECT_FILE) {
-                if (data != null) {
-                    Uri uri = data.getData();
-                    if (uri != null) {
-                        sendFileByUri(uri);
-                    }
-                }
+                onActivityResultForLocalFiles(data);
             }
         }
     }

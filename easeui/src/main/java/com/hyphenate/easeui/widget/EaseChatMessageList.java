@@ -4,6 +4,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -29,9 +31,11 @@ import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.interfaces.MessageListItemClickListener;
 import com.hyphenate.easeui.interfaces.OnItemClickListener;
 import com.hyphenate.easeui.manager.EaseConTypeSetManager;
+import com.hyphenate.easeui.manager.EaseThreadManager;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshLayout.OnRefreshListener {
@@ -192,10 +196,10 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
      * @param message
      */
     public void refreshMessage(EMMessage message) {
-        if(isActivityDisable() || message == null || messageList == null || conversation == null) {
+        if(isActivityDisable() || message == null || messageList == null) {
             return;
         }
-        messageList.post(()-> {
+        runOnMainThread(()-> {
             synchronized (EaseChatMessageList.class) {
                 if(messageAdapter != null) {
                     List<EMMessage> messages = messageAdapter.getData();
@@ -209,7 +213,36 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
                     }
                 }
             }
-            
+        });
+    }
+
+    /**
+     * 移除消息
+     * @param message
+     */
+    public void removeMessage(EMMessage message) {
+        if(isActivityDisable() || message == null || messageList == null) {
+            return;
+        }
+        runOnMainThread(()-> {
+            synchronized (EaseChatMessageList.class) {
+                if(messageAdapter != null) {
+                    List<EMMessage> messages = messageAdapter.getData();
+                    if(messages != null && !messages.isEmpty()) {
+                        for(int i = 0; i < messages.size(); i++) {
+                            if(TextUtils.equals(message.getMsgId(), messages.get(i).getMsgId())) {
+                                //需要保证条目从集合中删除
+                                messages.remove(i);
+                                //通知适配器删除条目
+                                messageAdapter.notifyItemRemoved(i);
+                                //通知刷新下一条消息
+                                messageAdapter.notifyItemChanged(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         });
     }
 
@@ -220,7 +253,7 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
         if(isActivityDisable() || messageList == null || conversation == null) {
             return;
         }
-        messageList.post(()-> {
+        runOnMainThread(()-> {
             if(isHistoryStatus && !isHistoryMoveToLatest) {
                 //如果是历史消息状态，且没有移动到最新的一条数据，则什么也不做
             }else {
@@ -595,5 +628,13 @@ public class EaseChatMessageList extends RelativeLayout implements SwipeRefreshL
      */
     public enum loadMoreStatus {
         IS_LOADING, HAS_MORE, NO_MORE_DATA
+    }
+
+    /**
+     * 切换到主线程
+     * @param runnable
+     */
+    public void runOnMainThread(Runnable runnable) {
+        EaseThreadManager.getInstance().runOnMainThread(runnable);
     }
 }
