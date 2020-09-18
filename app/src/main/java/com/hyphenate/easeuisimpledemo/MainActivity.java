@@ -96,14 +96,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private void switchToHome() {
         if(mConversationListFragment == null) {
-            mConversationListFragment = new EaseConversationListFragment();
+            mConversationListFragment = new ConversationListFragment();
         }
         replace(mConversationListFragment);
     }
 
     private void switchToFriends() {
         if(mFriendsFragment == null) {
-            mFriendsFragment = new EaseContactListFragment();
+            mFriendsFragment = new ContactListFragment();
         }
         replace(mFriendsFragment);
     }

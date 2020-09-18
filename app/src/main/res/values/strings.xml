@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">easeui</string>
 
+    <string name="demo_app_product_name">环信即时通讯产品</string>
+
     <string name="em_main_title_home">会话</string>
     <string name="em_main_title_friends">通讯录</string>
     <string name="em_main_title_discover">发现</string>

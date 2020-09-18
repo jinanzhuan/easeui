@@ -1,11 +1,13 @@
 package com.hyphenate.easeuisimpledemo;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import com.hyphenate.chat.EMClient;
 
 public class SplashActivity extends AppCompatActivity {
     private ImageView ivSplash;
+    private TextView tvProduct;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,25 +32,38 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         ivSplash = findViewById(R.id.iv_splash);
+        tvProduct = findViewById(R.id.tv_product);
 
-        Glide.with(this)
-                .load(R.drawable.em_splash_bg)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transition(DrawableTransitionOptions.with(new DrawableCrossFadeFactory.Builder(500).setCrossFadeEnabled(true).build()))
-                .addListener(new RequestListener<Drawable>() {
+        ivSplash.animate()
+                .alpha(1)
+                .setDuration(500)
+                .setListener(new Animator.AnimatorListener() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        loginSDK();
-                        return false;
+                    public void onAnimationStart(Animator animation) {
+
                     }
 
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    public void onAnimationEnd(Animator animation) {
                         loginSDK();
-                        return false;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
                     }
                 })
-                .into(ivSplash);
+                .start();
+
+        tvProduct.animate()
+                .alpha(1)
+                .setDuration(500)
+                .start();
     }
 
     private void loginSDK() {
@@ -57,11 +73,13 @@ public class SplashActivity extends AppCompatActivity {
                 //跳转到主页面
                 runOnUiThread(() -> {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    finish();
                 });
             }else {
                 //跳转到登录页面
                 runOnUiThread(()-> {
                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    finish();
                 });
             }
         }).start();
