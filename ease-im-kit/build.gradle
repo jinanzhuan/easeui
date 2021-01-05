@@ -41,9 +41,9 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     // baidu
     compileOnly files('libs/BaiduLBS_Android.jar')
+    compileOnly files('libs/hyphenatechat_3.7.3.jar')
 
     //api project(':hyphenatechatsdk')
-    compileOnly 'com.hyphenate:hyphenate-sdk:3.7.3'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
