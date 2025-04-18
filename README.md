@@ -1,4 +1,14 @@
 # EaseIMKit
+--------
+
+## 重要通知
+⚠️ **本项目已停止维护**  
+由于技术栈升级，环信官方已全面转向Kotlin开发。基于Java的此项目版本不再维护更新。
+
+请开发者迁移至新版Kotlin项目：  
+👉 [easemob-uikit-android](https://github.com/easemob/easemob-uikit-android)
+
+--------
 
 ## 简介
 EaseIMKit是一个基于环信sdk的UI库，封装了IM功能常用的控件、fragment等等。</br>
